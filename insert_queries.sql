@@ -2,17 +2,17 @@
  *
  */
 INSERT INTO User (Name, Email, FirstLoginDate) VALUES
-('John Doe', 'john.doe@example.com', '2024-03-01 09:00:00');
+('John Doe', 'john.doe@example.com', '2024-03-01 09:00:00'),
 ('Jane Smith', 'jane.smith@example.com', '2024-02-28 09:00:00'),
 ('Alex Johnson', 'alex.johnson@example.com', '2024-01-15 09:00:00'),
-('Maria Garcia', 'maria.garcia@example.com', '2023-12-10 09:00:00');
+('Maria Garcia', 'maria.garcia@example.com', '2023-12-10 09:00:00'),
 ('Paul Maximus', 'paul.maximus@example.com', '2023-12-15 09:00:00');
 
 INSERT INTO PremiumUser(UserId, ExpiryDate) VALUES
-(1, '2024-03-01 09:00:00')
+(1, '2024-03-01 09:00:00'),
 (2, '2025-02-28 09:00:00'),
 (3, '2025-01-15 09:00:00'),
-(4, '2024-12-10 09:00:00');
+(4, '2024-12-10 09:00:00'),
 (5, '2025-12-15 09:00:00'); 
 
 
