@@ -1,9 +1,6 @@
-import os
-
 from fastapi import FastAPI
-from databases import Database
-from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from .db import *
 
 app = FastAPI()
 
@@ -29,13 +26,14 @@ load_dotenv()
     Refactoring will not be necessary until we have a better understanding of the project structure, and refactoring should be very easy.
 """
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-db = Database(DATABASE_URL)
-
-
 @app.on_event("startup")
 async def startup():
-    await db.connect()
+    await connect_db()
+    await init_tables()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await disconnect_db()
 
 # TODO: Remove comment
 # Sample Q - No users table yet
@@ -50,8 +48,3 @@ async def get_users():
     return await db.fetch_all(q)
 
 # TODO: Let's go
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await db.disconnect()
