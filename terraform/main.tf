@@ -1,4 +1,8 @@
-// Not sure if we want AWS or not yet
-provider "aws" {
-  region = "us-west-2"
+// Connect to Oracle Cloud Infrastructure
+provider "oci" {
+  tenancy_ocid     = "Ask Junsu"
+  user_ocid        = "Ask Junsu"
+  fingerprint      = "Ask Junsu"
+  private_key_path = "Ask Junsu"
+  region           = "us-west-1"
 }
