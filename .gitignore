@@ -6,3 +6,6 @@ venv
 
 # Mac file system
 *.DS_Store
+
+# Credentials
+.env
