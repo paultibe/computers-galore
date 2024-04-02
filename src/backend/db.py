@@ -41,6 +41,70 @@ async def init_tables():
     """
     await db.execute(create_premium_users_sql)
 
+    # Cpu Brand
+    sql = \
+        """
+        CREATE TABLE IF NOT EXISTS CpuBrand (
+    Model VARCHAR(127) PRIMARY KEY,
+    Brand VARCHAR(127)
+        );
+    """
+    await db.execute(sql)
+
+    # Cpu
+    sql = \
+        """
+        CREATE TABLE IF NOT EXISTS Cpu (
+        Id SERIAL PRIMARY KEY,
+        Model VARCHAR(127),
+        ClockSpeed DECIMAL(5, 2) CHECK (ClockSpeed BETWEEN 0.00 AND 100.00),
+        CoreCount INT,
+        Generation INT,
+        FOREIGN KEY (Model) REFERENCES CpuBrand(Model)
+        );
+    """
+    await db.execute(sql)
+
+    # Gpu
+    sql = \
+        """
+        CREATE TABLE IF NOT EXISTS Gpu (
+        Id SERIAL PRIMARY KEY,
+        Brand VARCHAR(127),
+        Model VARCHAR(127),
+        Memory INT,
+        ClockSpeed DECIMAL(3, 2)
+        );
+    """
+    await db.execute(sql)
+
+    # Storage
+    sql = \
+        """
+        CREATE TABLE IF NOT EXISTS Storage (
+        Id SERIAL PRIMARY KEY,
+        Brand VARCHAR(127),
+        Model VARCHAR(127),
+        Capacity INT,
+        Type CHAR(3) CHECK (Type IN ('HDD', 'SSD'))
+        );
+    """
+    await db.execute(sql)
+
+    # Monitor
+    sql = \
+        """
+        CREATE TABLE IF NOT EXISTS Monitor (
+        Id SERIAL PRIMARY KEY,
+        Brand VARCHAR(127),
+        Model VARCHAR(127),
+        RefreshRate INT,
+        Size DECIMAL(3, 1) CHECK (Size BETWEEN 0.0 AND 99.9),
+        Resolution VARCHAR(16)
+        );
+    """
+    await db.execute(sql)
+
     # Computer
     sql = \
         """
@@ -57,7 +121,7 @@ async def init_tables():
         FOREIGN KEY (GpuId) REFERENCES Gpu(Id),
         FOREIGN KEY (StorageId) REFERENCES Storage(Id),
         FOREIGN KEY (MonitorId) REFERENCES Monitor(Id),
-        FOREIGN KEY (Brand) REFERENCES BrandAssembles(Brand),
+        FOREIGN KEY (Brand) REFERENCES BrandAssembles(Brand)
         );
     """
     await db.execute(sql)
@@ -116,71 +180,7 @@ async def init_tables():
         """
         CREATE TABLE IF NOT EXISTS AssembledIn (
         Brand VARCHAR(127) PRIMARY KEY,
-        AssembledIn VARCHAR(127),
-        );
-    """
-    await db.execute(sql)
-
-    # Cpu
-    sql = \
-        """
-        CREATE TABLE IF NOT EXISTS Cpu (
-        Id SERIAL PRIMARY KEY,
-        Model VARCHAR(127),
-        ClockSpeed DECIMAL(5, 2) CHECK (ClockSpeed BETWEEN 0.00 AND 100.00),
-        CoreCount INT,
-        Generation INT,
-        FOREIGN KEY (Model) REFERENCES CpuBrand(Model)
-        );
-    """
-    await db.execute(sql)
-
-    # Cpu Brand
-    sql = \
-        """
-        CREATE TABLE IF NOT EXISTS CpuBrand (
-    Model VARCHAR(127) PRIMARY KEY,
-    Brand VARCHAR(127)
-        );
-    """
-    await db.execute(sql)
-
-    # Gpu
-    sql = \
-        """
-        CREATE TABLE IF NOT EXISTS Gpu (
-        Id SERIAL PRIMARY KEY,
-        Brand VARCHAR(127),
-        Model VARCHAR(127),
-        Memory INT,
-        ClockSpeed DECIMAL(3, 2),
-        );
-    """
-    await db.execute(sql)
-
-    # Storage
-    sql = \
-        """
-        CREATE TABLE IF NOT EXISTS Storage (
-        Id SERIAL PRIMARY KEY,
-        Brand VARCHAR(127),
-        Model VARCHAR(127),
-        Capacity INT,
-        Type CHAR(3) CHECK (Type IN ('HDD', 'SSD')),
-        );
-    """
-    await db.execute(sql)
-
-    # Monitor
-    sql = \
-        """
-        CREATE TABLE IF NOT EXISTS Monitor (
-        Id SERIAL PRIMARY KEY,
-        Brand VARCHAR(127),
-        Model VARCHAR(127),
-        RefreshRate INT,
-        Size DECIMAL(3, 1) CHECK (Size BETWEEN 0.0 AND 99.9),
-        Resolution VARCHAR(16),
+        AssembledIn VARCHAR(127)
         );
     """
     await db.execute(sql)
@@ -190,7 +190,7 @@ async def init_tables():
         """
         CREATE TABLE IF NOT EXISTS ComputerStore (
         Address VARCHAR(255) PRIMARY KEY,
-        Name VARCHAR(255),
+        Name VARCHAR(255)
         );
     """
     await db.execute(sql)
