@@ -2,8 +2,10 @@ import os
 from databases import Database
 from dotenv import load_dotenv
 
+load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 db = Database(DATABASE_URL)
 
 
@@ -32,7 +34,7 @@ async def init_tables():
     create_premium_users_sql = \
         """
         CREATE TABLE IF NOT EXISTS PremiumUser (
-            UserId INT,
+            UserId BIGINT UNSIGNED,
             ExpiryDate DATETIME,
             FOREIGN KEY (UserId) REFERENCES User(Id)
         );
@@ -47,7 +49,7 @@ async def init_tables():
             Rating INT CHECK (Rating BETWEEN 1 AND 5),
             Description VARCHAR(2048),
             BenchMark DECIMAL(5, 2) CHECK (BenchMark BETWEEN 0.00 AND 999.99),
-            UserId INT,
+            UserId BIGINT UNSIGNED,
             ComputerId INT,
             Date DATETIME,
             FOREIGN KEY (UserId) REFERENCES User(Id),
@@ -63,7 +65,7 @@ async def init_tables():
         Id SERIAL PRIMARY KEY,
         Rating INT CHECK (Rating BETWEEN 1 AND 5),
         Description VARCHAR(2048),
-        UserId INT,
+        UserId BIGINT UNSIGNED,
         ComputerId INT,
         Date DATETIME,
         FOREIGN KEY (UserId) REFERENCES User(Id),
@@ -79,7 +81,7 @@ async def init_tables():
         Id SERIAL PRIMARY KEY,
         Rating INT CHECK (Rating BETWEEN 1 AND 5),
         Description VARCHAR(2048),
-        UserId INT,
+        UserId BIGINT UNSIGNED,
         ComputerId INT,
         Date DATETIME,
         FOREIGN KEY (UserId) REFERENCES User(Id),

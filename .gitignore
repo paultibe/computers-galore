@@ -9,3 +9,6 @@ venv
 
 # Credentials
 .env
+
+# Python bytecode
+*.pyc
