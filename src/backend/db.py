@@ -41,6 +41,27 @@ async def init_tables():
     """
     await db.execute(create_premium_users_sql)
 
+    # Computer
+    sql = \
+        """
+        CREATE TABLE IF NOT EXISTS Computer (
+        Id SERIAL PRIMARY KEY,
+        Brand VARCHAR(127),
+        Price DECIMAL(5, 2) CHECK (Price BETWEEN 0.00 AND 999.99),
+        AssembledIn VARCHAR(127),
+        CpuId INT,
+        GpuId INT,
+        StorageId INT,
+        MonitorId INT,
+        FOREIGN KEY (CpuId) REFERENCES Cpu(Id),
+        FOREIGN KEY (GpuId) REFERENCES Gpu(Id),
+        FOREIGN KEY (StorageId) REFERENCES Storage(Id),
+        FOREIGN KEY (MonitorId) REFERENCES Monitor(Id),
+        FOREIGN KEY (Brand) REFERENCES BrandAssembles(Brand),
+        );
+    """
+    await db.execute(sql)
+
     # Performance Review
     create_performance_review_sql = \
         """
@@ -86,27 +107,6 @@ async def init_tables():
         Date DATETIME,
         FOREIGN KEY (UserId) REFERENCES User(Id),
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
-        );
-    """
-    await db.execute(sql)
-
-    # Computer
-    sql = \
-        """
-        CREATE TABLE IF NOT EXISTS Computer (
-        Id SERIAL PRIMARY KEY,
-        Brand VARCHAR(127),
-        Price DECIMAL(5, 2) CHECK (Price BETWEEN 0.00 AND 999.99),
-        AssembledIn VARCHAR(127),
-        CpuId INT,
-        GpuId INT,
-        StorageId INT,
-        MonitorId INT,
-        FOREIGN KEY (CpuId) REFERENCES Cpu(Id),
-        FOREIGN KEY (GpuId) REFERENCES Gpu(Id),
-        FOREIGN KEY (StorageId) REFERENCES Storage(Id),
-        FOREIGN KEY (MonitorId) REFERENCES Monitor(Id),
-        FOREIGN KEY (Brand) REFERENCES BrandAssembles(Brand),
         );
     """
     await db.execute(sql)
