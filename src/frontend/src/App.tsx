@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import SearchPage from "./pages/search";
+import ResultsPage from "./pages/results";
 import "./App.css";
 import Modal from "./pages/Modal";
 
@@ -77,15 +78,18 @@ function Home() {
 }
 
 function App() {
-    return (
-        <Router>
-            <Routes>
-                <Route index element={<Home />} />
-                <Route path="search" element={<SearchPage />} />
-                <Route path="compare" element={<ComparePage />} />
-            </Routes>
-        </Router>
-    );
+
+  return (
+    <Router>
+      <Routes>
+          <Route index element={<Home />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="results" element={<ResultsPage result={null}/>} />
+          <Route path="compare" element={<ComparePage />} />
+      </Routes>
+        
+    </Router>
+  );
 }
 
 export default App;
