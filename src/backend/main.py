@@ -37,6 +37,10 @@ async def startup():
 async def shutdown():
     await disconnect_db()
 
+@app.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
