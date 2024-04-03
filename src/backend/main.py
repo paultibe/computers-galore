@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from db import *
+
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
 
 app = FastAPI()
 
@@ -20,12 +25,6 @@ app.add_middleware(
 
 load_dotenv()
 
-"""
-    ! Message from Junsu
-    For now, I belive we will not need to separate db connection, db CRUD operations, and the API routes into different files.
-    Refactoring will not be necessary until we have a better understanding of the project structure, and refactoring should be very easy.
-"""
-
 @app.on_event("startup")
 async def startup():
     await connect_db()
@@ -35,16 +34,39 @@ async def startup():
 async def shutdown():
     await disconnect_db()
 
-# TODO: Remove comment
-# Sample Q - No users table yet
-@app.get("/users")
-async def get_users():
-    q = """
-        SELECT 
-            * 
-        FROM 
-            users
-        """
-    return await db.fetch_all(q)
+class UserSignup(BaseModel):
+    name: str = Field(..., min_length=1, max_length=127)
+    email: str = Field(..., min_length=1, max_length=127)
 
-# TODO: Let's go
+@app.post("/signup/")
+async def signup_user(user: UserSignup):
+    print(f"User signup request received...{user.dict()}")
+    # Check for duplicate email
+    duplicate_check_query = "SELECT Id FROM User WHERE Email = :email"
+    duplicate = await db.fetch_one(duplicate_check_query, values={"email": user.email})
+    if duplicate:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="An account with this email already exists."
+        )
+
+    # Insert new user if email not found
+    insert_query = """
+    INSERT INTO User(Name, Email, FirstLoginDate)
+    VALUES (:name, :email, :first_login_date)
+    RETURNING Id;
+    """
+    values = {
+        "name": user.name,
+        "email": user.email,
+        "first_login_date": datetime.utcnow()
+    }
+    try:
+        last_record_id = await db.execute(query=insert_query, values=values)
+        print(f"User signed up successfully with ID: {last_record_id}")
+        return {"id": last_record_id, **user.dict()}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while signing up: {str(e)}"
+        )
