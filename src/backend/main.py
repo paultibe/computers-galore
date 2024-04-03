@@ -62,7 +62,6 @@ async def signup_user(user: UserSignup):
     insert_query = """
     INSERT INTO User(Name, Email, FirstLoginDate)
     VALUES (:name, :email, :first_login_date)
-    RETURNING Id;
     """
     values = {
         "name": user.name,
@@ -70,7 +69,8 @@ async def signup_user(user: UserSignup):
         "first_login_date": datetime.utcnow()
     }
     try:
-        last_record_id = await db.execute(query=insert_query, values=values)
+        await db.execute(query=insert_query, values=values)
+        last_record_id = await db.execute("SELECT LAST_INSERT_ID();")
         print(f"User signed up successfully with ID: {last_record_id}")
         return {"id": last_record_id, **user.dict()}
     except Exception as e:
