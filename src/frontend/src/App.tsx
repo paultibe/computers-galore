@@ -14,7 +14,7 @@ function Home() {
     // User sign up states
     // Password is not required for user sign in
     const [signUpModalActive, setSignUpModalActive] = useState(false);
-    const [username, setUsername] = useState("");
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
 
     const handleSignUp = () => {
@@ -27,13 +27,13 @@ function Home() {
         setSignUpModalActive(false);
     }
 
-    const submitSignUp = async (email: string, username: string) => {
-        console.log("Sign up submitted", { email, username });
+    const submitSignUp = async (email: string, name: string) => {
+        console.log("Sign up submitted", { email, name });
         setSignUpModalActive(false);
-        await shootData({ username, email });
+        await shootData({ name, email });
     };
 
-    const shootData = async (data: { email: string; username: string }) => {
+    const shootData = async (data: { email: string; name: string }) => {
         const url = `${BE_BASE_URL}/signup`;
         const response = await fetch(url, {
           method: 'POST',
