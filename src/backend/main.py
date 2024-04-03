@@ -46,7 +46,7 @@ class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
 
-@app.post("/signup/")
+@app.post("/signup")
 async def signup_user(user: UserSignup):
     print(f"User signup request received...{user.dict()}")
     # Check for duplicate email
