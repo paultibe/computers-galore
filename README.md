@@ -7,3 +7,7 @@
 | Paul Tiberghien  |    10887602    |       r1e6f       | paultiberghien1@gmail.com  |
 
 Our project allows users to filter, search for, and compare computers/parts from various retailers that meet particular specifications. Stored computer information includes CPU, GPU, storage, and monitor details as well as the location at which it is sold. Our database also allows users to share their experiences regarding the performance, design, and satisfaction of each component to help other users make informed purchases.
+
+---
+
+## No extra information to provide other than the report
