@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import SearchPage from "./pages/search";
+import ResultsPage from "./pages/results";
 import "./App.css";
 
 
@@ -37,6 +38,7 @@ function App() {
       <Routes>
           <Route index element={<Home />} />
           <Route path="search" element={<SearchPage />} />
+          <Route path="results" element={<ResultsPage result={null}/>} />
           <Route path="compare" element={<ComparePage />} />
       </Routes>
         
