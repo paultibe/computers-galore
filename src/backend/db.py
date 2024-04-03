@@ -105,6 +105,16 @@ async def init_tables():
     """
     await db.execute(sql)
 
+    # Brand Assembles
+    ba_create_sql = \
+        """
+        CREATE TABLE IF NOT EXISTS BrandAssembles (
+        Brand VARCHAR(127) PRIMARY KEY,
+        AssembledIn VARCHAR(127)
+        );
+    """
+    await db.execute(ba_create_sql)
+
     # Computer
     sql = \
         """
@@ -113,10 +123,10 @@ async def init_tables():
         Brand VARCHAR(127),
         Price DECIMAL(5, 2) CHECK (Price BETWEEN 0.00 AND 999.99),
         AssembledIn VARCHAR(127),
-        CpuId INT,
-        GpuId INT,
-        StorageId INT,
-        MonitorId INT,
+        CpuId BIGINT UNSIGNED,
+        GpuId BIGINT UNSIGNED,
+        StorageId BIGINT UNSIGNED,
+        MonitorId BIGINT UNSIGNED,
         FOREIGN KEY (CpuId) REFERENCES Cpu(Id),
         FOREIGN KEY (GpuId) REFERENCES Gpu(Id),
         FOREIGN KEY (StorageId) REFERENCES Storage(Id),
@@ -135,7 +145,7 @@ async def init_tables():
             Description VARCHAR(2048),
             BenchMark DECIMAL(5, 2) CHECK (BenchMark BETWEEN 0.00 AND 999.99),
             UserId BIGINT UNSIGNED,
-            ComputerId INT,
+            ComputerId BIGINT UNSIGNED,
             Date DATETIME,
             FOREIGN KEY (UserId) REFERENCES User(Id),
             FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
@@ -151,7 +161,7 @@ async def init_tables():
         Rating INT CHECK (Rating BETWEEN 1 AND 5),
         Description VARCHAR(2048),
         UserId BIGINT UNSIGNED,
-        ComputerId INT,
+        ComputerId BIGINT UNSIGNED,
         Date DATETIME,
         FOREIGN KEY (UserId) REFERENCES User(Id),
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
@@ -167,7 +177,7 @@ async def init_tables():
         Rating INT CHECK (Rating BETWEEN 1 AND 5),
         Description VARCHAR(2048),
         UserId BIGINT UNSIGNED,
-        ComputerId INT,
+        ComputerId BIGINT UNSIGNED,
         Date DATETIME,
         FOREIGN KEY (UserId) REFERENCES User(Id),
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
@@ -200,7 +210,7 @@ async def init_tables():
         """
         CREATE TABLE IF NOT EXISTS Sells (
         StoreAddress VARCHAR(255),
-        ComputerId INT,
+        ComputerId BIGINT UNSIGNED,
         FOREIGN KEY (StoreAddress) REFERENCES ComputerStore(Address),
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
         );
@@ -211,8 +221,8 @@ async def init_tables():
     sql = \
         """
         CREATE TABLE IF NOT EXISTS Searches (
-        UserId INT,
-        ComputerId INT,
+        UserId BIGINT UNSIGNED,
+        ComputerId BIGINT UNSIGNED,
         FOREIGN KEY (UserId) REFERENCES User(Id),
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
         );
@@ -223,9 +233,9 @@ async def init_tables():
     sql = \
         """
         CREATE TABLE IF NOT EXISTS Compares (
-        UserId INT,
-        ComputerIdOne INT,
-        ComputerIdTwo INT,
+        UserId BIGINT UNSIGNED,
+        ComputerIdOne BIGINT UNSIGNED,
+        ComputerIdTwo BIGINT UNSIGNED,
         FOREIGN KEY (UserId) REFERENCES User(Id),
         FOREIGN KEY (ComputerIdOne) REFERENCES Computer(Id),
         FOREIGN KEY (ComputerIdTwo) REFERENCES Computer(Id)
@@ -238,7 +248,7 @@ async def init_tables():
         """
         CREATE TABLE IF NOT EXISTS Endorses (
         StoreAddress VARCHAR(255),
-        ReviewId INT,
+        ReviewId BIGINT UNSIGNED,
         FOREIGN KEY (StoreAddress) REFERENCES ComputerStore(Address),
         FOREIGN KEY (ReviewId) REFERENCES PerformanceReview(Id)
         );
