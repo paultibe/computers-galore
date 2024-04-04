@@ -63,7 +63,9 @@ function Home() {
     const handleLogIn = async () => {
         const emailExists = await checkUserExists(email);
         if (emailExists) {
+            console.log("User with email {email} exists. Logging in!");
             setCurUserEmail(email);
+            console.log("Current user email state: ", curUserEmail);
         } else {
             alert("No such user exists.");
         }
