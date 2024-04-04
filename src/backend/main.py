@@ -132,16 +132,17 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
         AND Gpu.Memory BETWEEN :minGpuMemory AND :maxGpuMemory ;
     """
     try:
-        results = await db.execute(query=q, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
+        results = await db.execute(query=filter_query, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
         formatted_results = []
-        for row in results:
-            computer_data = {
-                'id': row[0],
-                'brand': row[1],
-                'price': row[2],
-                'assembledIn': row[3]
-            }
-            formatted_results.append(computer_data)
+        if results:
+            for row in results:
+                computer_data = {
+                    'id': row[0],
+                    'brand': row[1],
+                    'price': row[2],
+                    'assembledIn': row[3]
+                }
+                formatted_results.append(computer_data)
         return formatted_results
     except Exception as e:
         raise HTTPException(
