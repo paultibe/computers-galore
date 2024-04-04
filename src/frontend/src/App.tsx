@@ -17,7 +17,8 @@ function Home() {
     const [signUpModalActive, setSignUpModalActive] = useState(false);
     const [signInModalActive, setSignInModalActive] = useState(false);
 
-    const [curUserEmail, setCurUserEmail] = useState(""); // If empty, user is not signed in
+    // If user signed in, store email, if empty, user is not signed in
+    const [curUserEmail, setCurUserEmail] = useState(""); 
 
     const handleSignUp = () => {
         console.log("Sign up clicked");
