@@ -113,5 +113,50 @@ async def delete_user(user_email: UserEmail):
             detail=f"An error occurred while deleting the user: {str(e)}"
         )
 
+class Review(BaseModel):
+    review_type: str
+    description: str
+    rating: int
+
+@app.post("/userWroteAllReviews")
+async def get_user_wrote_all_reviews(user_email: UserEmail):
+    email = user_email.email
+    division_query = \
+    """
+    SELECT * FROM User U
+    WHERE U.Email = :email AND NOT EXISTS (
+        (SELECT 'Performance' AS review_type UNION SELECT 'Satisfaction' UNION SELECT 'Design') 
+
+        EXCEPT
+
+        (SELECT 'Performance' 
+         FROM PerformanceReview PR 
+         WHERE PR.UserId = U.Id
+
+         UNION 
+
+         SELECT 'Satisfaction' 
+         FROM SatisfactionReview SR 
+         WHERE SR.UserId = U.Id
+
+         UNION 
+
+         SELECT 'Design' 
+         FROM DesignReview DR 
+         WHERE DR.UserId = U.Id)
+    );
+    """
+    try:
+        user = await db.fetch_one(query=division_query, values={"email": email})
+        if user:
+            return {"message": "User has wrote reviews across all types."}
+        else:
+            return {"message": "User didn't write all types of reviews."}
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"An error occurred: {str(e)}"
+        )
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
