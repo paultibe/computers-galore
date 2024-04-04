@@ -14,7 +14,7 @@ interface CpuBrand {
 const SearchPage = () => {
 
     // CPU States
-    const [cpuBrand, setCpuBrand] = useState<CpuBrand>({AMD: false, Intel: false });
+    const [cpuBrand, setCpuBrand] = useState<CpuBrand>({AMD: false, Intel: true });
     const [cpuCoreCount, setCpuCoreCount] = useState<number[]>([1, 16]);
     const handleCpuBrandUpdate = (updatedBrand) => {
         setCpuBrand(updatedBrand);
@@ -25,7 +25,7 @@ const SearchPage = () => {
 
 
     // GPU States
-    const [gpuBrand, setGpuBrand] = useState<GpuBrand>({NVIDIA: false, AMD: false });
+    const [gpuBrand, setGpuBrand] = useState<GpuBrand>({NVIDIA: true, AMD: false });
     const [gpuMemory, setGpuMemory] = useState<number[]>([0, 8]);
     const handleGpuBrandUpdate = (updatedBrand) => {
         setGpuBrand(updatedBrand);
@@ -39,7 +39,7 @@ const SearchPage = () => {
     const navigate = useNavigate();
 
     const buildUrl = () => {
-        let url = BE_BASE_URL+`/filterComputers?`;
+        let url = BE_BASE_URL+`/filterComputers`;
 
         // CPU Filters
         const selectedCpuBrands = Object.keys(cpuBrand).filter(key => cpuBrand[key]);
@@ -49,7 +49,7 @@ const SearchPage = () => {
         const selectedGpuBrands = Object.keys(gpuBrand).filter(key => gpuBrand[key]);
         let gpuUrl = `${selectedGpuBrands.join(',')}/${gpuMemory[0]}/${gpuMemory[1]}`;
 
-        return `${url}${cpuUrl}/${gpuUrl}`;
+        return `${url}/${cpuUrl}/${gpuUrl}`;
 
     }
 

@@ -115,8 +115,8 @@ async def delete_user(user_email: UserEmail):
     
 @app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
 async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
-    cpuBrands = cpuBrands.split(",")
-    gpuBrands = gpuBrands.split(",")
+    # cpuBrands = cpuBrands.split(",")
+    # gpuBrands = gpuBrands.split(",")
     
     filter_query = """
     SELECT C.Id, C.Brand, C.Price, BA.AssembledIn
@@ -126,21 +126,13 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
     JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
     JOIN BrandAssembles BA on C.Brand = BA.Brand
     WHERE 
-        CpuBrand.Brand IN ({})
-        AND Cpu.CoreCount BETWEEN {} AND {}
-        AND Gpu.Brand IN ({})
-        AND Gpu.Memory BETWEEN {} AND {};
-    """.format(
-        ','.join(['%s'] * len(cpuBrands)),
-        minCpuCoreCount,
-        maxCpuCoreCount,
-        ','.join(['%s'] * len(gpuBrands)),
-        minGpuMemory,
-        maxGpuMemory
-    )
-
+        CpuBrand.Brand IN (:cpuBrands)
+        AND Cpu.CoreCount BETWEEN :minCpuCoreCount AND :maxCpuCoreCount
+        AND Gpu.Brand IN (:gpuBrands)
+        AND Gpu.Memory BETWEEN :minGpuMemory AND :maxGpuMemory ;
+    """
     try:
-        results = await db.fetchall(filter_query, cpuBrands + gpuBrands)
+        results = await db.execute(query=q, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
         formatted_results = []
         for row in results:
             computer_data = {
@@ -154,7 +146,7 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred while deleting the user: {str(e)}"
+            detail=f"An error occurred while filtering computers: {str(e)}"
         )
 
 
