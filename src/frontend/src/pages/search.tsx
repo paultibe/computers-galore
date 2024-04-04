@@ -39,17 +39,17 @@ const SearchPage = () => {
     const navigate = useNavigate();
 
     const buildUrl = () => {
-        let url = BE_BASE_URL+`/filter?`;
+        let url = BE_BASE_URL+`/filterComputers?`;
 
         // CPU Filters
         const selectedCpuBrands = Object.keys(cpuBrand).filter(key => cpuBrand[key]);
-        let cpuUrl = `cpuBrands=${selectedCpuBrands.join(',')}&minCpuCoreCount=${cpuCoreCount[0]}&maxCpuCoreCount=${cpuCoreCount[1]}`;
+        let cpuUrl = `${selectedCpuBrands.join(',')}/${cpuCoreCount[0]}/${cpuCoreCount[1]}`;
 
         // GPU Filters
         const selectedGpuBrands = Object.keys(gpuBrand).filter(key => gpuBrand[key]);
-        let gpuUrl = `gpuBrands=${selectedGpuBrands.join(',')}&minGpuMemory=${gpuMemory[0]}&maxGpuMemory=${gpuMemory[1]}`;
+        let gpuUrl = `${selectedGpuBrands.join(',')}/${gpuMemory[0]}/${gpuMemory[1]}`;
 
-        return `${url}${cpuUrl}${gpuUrl}`;
+        return `${url}${cpuUrl}/${gpuUrl}`;
 
     }
 
@@ -64,8 +64,7 @@ const SearchPage = () => {
                 },
             });
             const data = await response.json();
-            // Process the returned data
-            console.log(data);
+            return data;
         } catch (error) {
             console.error('Error fetching computers:', error);
         }
@@ -74,7 +73,9 @@ const SearchPage = () => {
 
     const handleSearch = () => {
         console.log(buildUrl())
-        
+
+        const computers = fetchComputers();
+        console.log(computers);
         
         const data = [{ id: 1, brand: "Intel", model: "CoffeeLake" }, 
         { id: 2, brand: "AMD", model: "RYZEN" }, 

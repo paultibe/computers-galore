@@ -112,6 +112,52 @@ async def delete_user(user_email: UserEmail):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while deleting the user: {str(e)}"
         )
+    
+@app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
+async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
+    cpuBrands = cpuBrands.split(",")
+    gpuBrands = gpuBrands.split(",")
+    
+    filter_query = """
+    SELECT C.Id, C.Brand, C.Price, BA.AssembledIn
+    FROM Computer C
+    JOIN Cpu ON C.CpuId = Cpu.Id
+    JOIN Gpu ON C.GpuId = Gpu.Id
+    JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
+    JOIN BrandAssembles BA on C.Brand = BA.Brand
+    WHERE 
+        CpuBrand.Brand IN ({})
+        AND Cpu.CoreCount BETWEEN {} AND {}
+        AND Gpu.Brand IN ({})
+        AND Gpu.Memory BETWEEN {} AND {};
+    """.format(
+        ','.join(['%s'] * len(cpuBrands)),
+        minCpuCoreCount,
+        maxCpuCoreCount,
+        ','.join(['%s'] * len(gpuBrands)),
+        minGpuMemory,
+        maxGpuMemory
+    )
+
+    try:
+        results = await db.fetchall(filter_query, cpuBrands + gpuBrands)
+        formatted_results = []
+        for row in results:
+            computer_data = {
+                'id': row[0],
+                'brand': row[1],
+                'price': row[2],
+                'assembledIn': row[3]
+            }
+            formatted_results.append(computer_data)
+        return formatted_results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while deleting the user: {str(e)}"
+        )
+
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
