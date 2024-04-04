@@ -5,6 +5,8 @@ import ResultsPage from "./pages/results";
 import "./App.css";
 import SignUpModal from "./pages/SignUpModal";
 import SignInModal from './pages/SignInModal';
+import DeleteUserModal from "./pages/DeleteUserModal";
+
 function ComparePage() {
     return <div>Compare Page</div>;
 }
@@ -16,6 +18,7 @@ function Home() {
     // Password is not required for user sign in
     const [signUpModalActive, setSignUpModalActive] = useState(false);
     const [signInModalActive, setSignInModalActive] = useState(false);
+    const [deleteModalActive, setDeleteModalActive] = useState(false);
 
     // If user signed in, store email, if empty, user is not signed in
     const [curUserEmail, setCurUserEmail] = useState(""); 
@@ -96,6 +99,30 @@ function Home() {
         }
     };
 
+    const handleDeleteUser = async (email: string) => {
+        const url = `${BE_BASE_URL}/deleteUser`;
+        try {
+            const response = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            alert(responseData.detail || "User deleted successfully.");
+            setDeleteModalActive(false); 
+        } catch (error) {
+            console.error("Failed to delete user:", error);
+            alert("Failed to delete user.");
+        }
+    };
+
     return (
         <div className="text-center mt-10">
             <h1 className="text-3xl font-bold">Computers Galore!</h1>
@@ -127,6 +154,17 @@ function Home() {
                     onClose={handleModalClose}
                     onSubmit={submitSignUp}
                 />
+                <button
+                onClick={() => setDeleteModalActive(true)}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Delete User 🪦
+            </button>
+            <DeleteUserModal
+                isOpen={deleteModalActive}
+                onClose={() => setDeleteModalActive(false)}
+                onDeleteUser={handleDeleteUser}
+            />
             </div>
         </div>
     );

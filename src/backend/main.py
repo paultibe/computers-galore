@@ -99,5 +99,19 @@ async def check_user(user_email: UserEmail):
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+@app.delete("/deleteUser")
+async def delete_user(user_email: UserEmail):
+    email = user_email.email
+    delete_query = "DELETE FROM User WHERE Email = :email"
+    
+    try:
+        await db.execute(query=delete_query, values={"email": email})
+        return {"detail": "User deleted successfully."}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while deleting the user: {str(e)}"
+        )
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
