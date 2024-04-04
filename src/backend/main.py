@@ -82,9 +82,8 @@ class UserEmail(BaseModel):
     email: str
 
 @app.post("/checkUserExists")
-async def check_user(user_email: str):
+async def check_user(user_email: UserEmail): 
     email = user_email.email
-
     print(f"Checking if user exists with email: {email}")
     q = "SELECT Email FROM User WHERE Email = :email"
 
