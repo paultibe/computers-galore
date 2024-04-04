@@ -12,4 +12,4 @@ Our project allows users to filter, search for, and compare computers/parts from
 
 ## Hi there! 👋
 
-- For SQL queries as per #2 of the milestone 4 requirements, please refer to the `create_tables_insert_data.sql` file in the root directory of the repository.
+- For SQL queries as per #2 of the milestone 4 requirements, please refer to the `master_sql.sql` file in the root directory of the repository.
