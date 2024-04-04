@@ -6,7 +6,7 @@ interface ModalProps {
   onSubmit: (email: string, username: string) => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const SignUpModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
 
@@ -57,4 +57,4 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default Modal;
+export default SignUpModal;

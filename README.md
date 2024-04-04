@@ -10,4 +10,6 @@ Our project allows users to filter, search for, and compare computers/parts from
 
 ---
 
-## No extra information to provide other than the report
+## Hi there! 👋
+
+- For SQL queries as per #2 of the milestone 4 requirements, please refer to the `create_tables_insert_data.sql` file in the root directory of the repository.

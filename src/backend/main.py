@@ -78,6 +78,26 @@ async def signup_user(user: UserSignup):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while signing up: {str(e)}"
         )
+class UserEmail(BaseModel):
+    email: str
+
+@app.post("/checkUserExists")
+async def check_user(user_email: UserEmail): 
+    email = user_email.email
+    print(f"Checking if user exists with email: {email}")
+    q = "SELECT Email FROM User WHERE Email = :email"
+
+    try:
+        user = await db.fetch_one(query=q, values={"email": email})
+        if user:
+            return {"exists": True}
+        else:
+            return {"exists": False}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
