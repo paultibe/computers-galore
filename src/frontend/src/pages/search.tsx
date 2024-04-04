@@ -2,11 +2,19 @@ import { useState, useEffect } from "react";
 import { BE_BASE_URL } from "../constants.ts";
 import { useCollapse } from "react-collapsed";
 import {CpuFilters, GpuFilters} from "./filters.tsx";
+import { useNavigate } from 'react-router-dom';
+
+interface GpuBrand {
+    [key: string]: boolean;
+}
+interface CpuBrand {
+    [key: string]: boolean;
+}
 
 const SearchPage = () => {
 
     // CPU States
-    const [cpuBrand, setCpuBrand] = useState({AMD: false, Intel: false });
+    const [cpuBrand, setCpuBrand] = useState<CpuBrand>({AMD: false, Intel: false });
     const [cpuCoreCount, setCpuCoreCount] = useState<number[]>([1, 16]);
     const handleCpuBrandUpdate = (updatedBrand) => {
         setCpuBrand(updatedBrand);
@@ -17,7 +25,7 @@ const SearchPage = () => {
 
 
     // GPU States
-    const [gpuBrand, setGpuBrand] = useState({NVIDIA: false, AMD: false });
+    const [gpuBrand, setGpuBrand] = useState<GpuBrand>({NVIDIA: false, AMD: false });
     const [gpuMemory, setGpuMemory] = useState<number[]>([0, 8]);
     const handleGpuBrandUpdate = (updatedBrand) => {
         setGpuBrand(updatedBrand);
@@ -27,6 +35,68 @@ const SearchPage = () => {
         setGpuMemory(updatedMemory);
         
     };
+
+    const navigate = useNavigate();
+
+    const buildUrl = () => {
+        let url = BE_BASE_URL+`/filter?`;
+
+        // CPU Filters
+        const selectedCpuBrands = Object.keys(cpuBrand).filter(key => cpuBrand[key]);
+        let cpuUrl = `cpuBrands=${selectedCpuBrands.join(',')}&minCpuCoreCount=${cpuCoreCount[0]}&maxCpuCoreCount=${cpuCoreCount[1]}`;
+
+        // GPU Filters
+        const selectedGpuBrands = Object.keys(gpuBrand).filter(key => gpuBrand[key]);
+        let gpuUrl = `gpuBrands=${selectedGpuBrands.join(',')}&minGpuMemory=${gpuMemory[0]}&maxGpuMemory=${gpuMemory[1]}`;
+
+        return `${url}${cpuUrl}${gpuUrl}`;
+
+    }
+
+    const fetchComputers = async () => {
+        try {
+
+            const url = buildUrl();
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const data = await response.json();
+            // Process the returned data
+            console.log(data);
+        } catch (error) {
+            console.error('Error fetching computers:', error);
+        }
+    };
+    
+
+    const handleSearch = () => {
+        console.log(buildUrl())
+        
+        
+        const data = [{ id: 1, brand: "Intel", model: "CoffeeLake" }, 
+        { id: 2, brand: "AMD", model: "RYZEN" }, 
+        { id: 3, brand: "AMD", model: "Zen" },
+        { id: 4, brand: "AMD", model: "RYZEN" },
+        { id: 5, brand: "AMD", model: "RYZEN" },
+        { id: 6, brand: "AMD", model: "RYZEN" },
+        { id: 7, brand: "AMD", model: "RYZEN" },
+        { id: 8, brand: "AMD", model: "RYZEN" },
+        { id: 9, brand: "AMD", model: "RYZEN" },
+        { id: 10, brand: "AMD", model: "RYZEN" },
+        { id: 11, brand: "AMD", model: "RYZEN" },
+        { id: 12, brand: "AMD", model: "RYZEN" },
+        { id: 13, brand: "AMD", model: "RYZEN" },
+        { id: 14, brand: "AMD", model: "RYZEN" },
+        { id: 15, brand: "AMD", model: "RYZEN" },
+        { id: 16, brand: "AMD", model: "RYZEN" },
+        { id: 17, brand: "AMD", model: "RYZEN" },
+        { id: 18, brand: "AMD", model: "RYZEN" },];
+        navigate('/results', {state: {data}});
+      };
+
     return (
         <div>
             <div style={{display:"flex", flexDirection:"column", rowGap:"1em" }}>
@@ -34,7 +104,7 @@ const SearchPage = () => {
                 <GpuFilters onUpdateBrand={handleGpuBrandUpdate} onUpdateMemory={handleGpuMemoryUpdate} />
             </div>
             <div style={{ marginTop: "1em" }}>
-                <button onClick={() => console.log(cpuBrand, cpuCoreCount, gpuBrand, gpuMemory)}>Search</button>
+                <button onClick={handleSearch}>Search</button>
             </div>
         </div>
     );
