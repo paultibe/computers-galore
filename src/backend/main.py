@@ -5,7 +5,7 @@ import uvicorn
 
 from db import *
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
@@ -79,10 +79,10 @@ async def signup_user(user: UserSignup):
             detail=f"An error occurred while signing up: {str(e)}"
         )
 class UserEmail(BaseModel):
-    email: EmailStr
+    email: str
 
 @app.post("/checkUserExists")
-async def check_user(user_email: UserEmail):
+async def check_user(user_email: str):
     email = user_email.email
 
     print(f"Checking if user exists with email: {email}")
