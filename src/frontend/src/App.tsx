@@ -6,11 +6,11 @@ import "./App.css";
 import Modal from "./pages/Modal";
 
 function ComparePage() {
-    return <div>Compare Page</div>;
+  return <div>Compare Page</div>;
 }
 
 function Home() {
-    const BE_BASE_URL = "http://192.9.242.103:8000";
+  const BE_BASE_URL = "http://192.9.242.103:8000";
 
     // User sign up states
     // Password is not required for user sign in
@@ -20,21 +20,21 @@ function Home() {
 
     const [curUserEmail, setCurUserEmail] = useState(""); // If empty, user is not signed in
 
-    const handleSignUp = () => {
-        console.log("Sign up clicked");
-        setSignUpModalActive(true);
-    };
+  const handleSignUp = () => {
+    console.log("Sign up clicked");
+    setSignUpModalActive(true);
+  };
 
     const handleModalClose = () => {
         console.log("Sign up closed");
         setSignUpModalActive(false);
     };
 
-    const submitSignUp = async (email: string, name: string) => {
-        console.log("Sign up submitted", { email, name });
-        setSignUpModalActive(false);
-        await shootData({ name, email });
-    };
+  const submitSignUp = async (email: string, name: string) => {
+    console.log("Sign up submitted", { email, name });
+    setSignUpModalActive(false);
+    await shootData({ name, email });
+  };
 
     const shootData = async (data: { email: string; name: string }) => {
         const url = `${BE_BASE_URL}/signup`;
