@@ -19,6 +19,16 @@ async def disconnect_db():
 
 async def init_tables():
     # Users
+    """
+        Note:
+        On user delete, cascade delete 
+        - PremiumUser
+        - Performance Review
+        - Design Review
+        - Satisfaction Review
+        - Searches
+        - Compares
+    """
     create_users_sql = \
         """
         CREATE TABLE IF NOT EXISTS User (
@@ -36,7 +46,7 @@ async def init_tables():
         CREATE TABLE IF NOT EXISTS PremiumUser (
             UserId BIGINT UNSIGNED,
             ExpiryDate DATETIME,
-            FOREIGN KEY (UserId) REFERENCES User(Id)
+            FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE
         );
     """
     await db.execute(create_premium_users_sql)
@@ -147,7 +157,7 @@ async def init_tables():
             UserId BIGINT UNSIGNED,
             ComputerId BIGINT UNSIGNED,
             Date DATETIME,
-            FOREIGN KEY (UserId) REFERENCES User(Id),
+            FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
             FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
         );
     """
@@ -163,7 +173,7 @@ async def init_tables():
         UserId BIGINT UNSIGNED,
         ComputerId BIGINT UNSIGNED,
         Date DATETIME,
-        FOREIGN KEY (UserId) REFERENCES User(Id),
+        FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
         );
     """
@@ -179,7 +189,7 @@ async def init_tables():
         UserId BIGINT UNSIGNED,
         ComputerId BIGINT UNSIGNED,
         Date DATETIME,
-        FOREIGN KEY (UserId) REFERENCES User(Id),
+        FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
         );
     """
@@ -223,7 +233,7 @@ async def init_tables():
         CREATE TABLE IF NOT EXISTS Searches (
         UserId BIGINT UNSIGNED,
         ComputerId BIGINT UNSIGNED,
-        FOREIGN KEY (UserId) REFERENCES User(Id),
+        FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
         FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
         );
     """
@@ -236,7 +246,7 @@ async def init_tables():
         UserId BIGINT UNSIGNED,
         ComputerIdOne BIGINT UNSIGNED,
         ComputerIdTwo BIGINT UNSIGNED,
-        FOREIGN KEY (UserId) REFERENCES User(Id),
+        FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
         FOREIGN KEY (ComputerIdOne) REFERENCES Computer(Id),
         FOREIGN KEY (ComputerIdTwo) REFERENCES Computer(Id)
         );
