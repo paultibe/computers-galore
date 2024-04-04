@@ -64,6 +64,7 @@ function Home() {
         if (emailExists) {
           setCurUserEmail(email);
           setSignInModalActive(false);
+          console.log("User logged in:", email);
         } else {
           alert("No such user exists.");
         }
