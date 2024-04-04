@@ -115,7 +115,7 @@ function Home() {
             }
 
             const responseData = await response.json();
-            alert(responseData.detail || "User deleted successfully.");
+            alert(responseData.detail + "User deleted successfully. All user reviews, searches, and compares have been deleted.");
             setDeleteModalActive(false); 
         } catch (error) {
             console.error("Failed to delete user:", error);
@@ -158,7 +158,7 @@ function Home() {
                 onClick={() => setDeleteModalActive(true)}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             >
-                Delete User 🪦
+                Delete User ☠️🪦
             </button>
             <DeleteUserModal
                 isOpen={deleteModalActive}
