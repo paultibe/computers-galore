@@ -5,7 +5,7 @@ import uvicorn
 
 from db import *
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 from datetime import datetime
 
@@ -78,15 +78,18 @@ async def signup_user(user: UserSignup):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while signing up: {str(e)}"
         )
+class UserEmail(BaseModel):
+    email: EmailStr
 
 @app.post("/checkUserExists")
-async def check_user(email: str):
+async def check_user(user_email: UserEmail):
+    email = user_email.email
+
     print(f"Checking if user exists with email: {email}")
     q = "SELECT Email FROM User WHERE Email = :email"
 
     try:
         user = await db.fetch_one(query=q, values={"email": email})
-
         if user:
             return {"exists": True}
         else:
