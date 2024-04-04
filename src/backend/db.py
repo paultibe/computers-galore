@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# get connection string
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 db = Database(DATABASE_URL)

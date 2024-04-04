@@ -40,7 +40,7 @@ async def shutdown():
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {"junsu and john": "are cracked programmers"}
 
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
