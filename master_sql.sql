@@ -77,7 +77,7 @@ CREATE TABLE BrandAssembles (
 CREATE TABLE Computer (
     Id SERIAL PRIMARY KEY,
     Brand VARCHAR(127),
-    Price DECIMAL(5, 2) CHECK (Price BETWEEN 0.00 AND 999.99),
+    Price DECIMAL(7, 2) CHECK (Price BETWEEN 0.00 AND 99999.99),
     AssembledIn VARCHAR(127),
     CpuId BIGINT UNSIGNED,
     GpuId BIGINT UNSIGNED,
@@ -94,7 +94,7 @@ CREATE TABLE PerformanceReview (
     Id SERIAL PRIMARY KEY,
     Rating INT CHECK (Rating BETWEEN 1 AND 5),
     Description VARCHAR(2048),
-    BenchMark DECIMAL(5, 2) CHECK (BenchMark BETWEEN 0.00 AND 999.99),
+    BenchMark DECIMAL(8, 2) CHECK (BenchMark BETWEEN 0.00 AND 999999.99),
     UserId BIGINT UNSIGNED,
     ComputerId BIGINT UNSIGNED,
     Date DATETIME,
@@ -159,9 +159,8 @@ CREATE TABLE Compares (
 
 CREATE TABLE Endorses (
     StoreAddress VARCHAR(255),
-    ReviewId BIGINT UNSIGNED,
-    FOREIGN KEY (StoreAddress) REFERENCES ComputerStore(Address),
-    FOREIGN KEY (ReviewId) REFERENCES PerformanceReview(Id)
+    ReviewId BIGINT UNSIGNED,  -- Can be PerformanceReview, DesignReview, or SatisfactionReview
+    FOREIGN KEY (StoreAddress) REFERENCES ComputerStore(Address)
 );
 
 INSERT INTO User (Name, Email, FirstLoginDate) VALUES
@@ -229,7 +228,7 @@ INSERT INTO Computer (Brand, Price, AssembledIn, CpuId, GpuId, StorageId, Monito
 
 INSERT INTO PerformanceReview (Rating, Description, BenchMark, UserId, ComputerId, Date) VALUES
 (5, 'Excellent performance and value.', 10000.00, 1, 1, '2024-03-01 09:00:00'),
-(4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03'),
+(4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03-01 22:00:00'),
 (4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03-02 09:30:00'),
 (3, 'Average performance, decent for everyday tasks.', 7000.00, 3, 3, '2024-03-03 10:00:00'),
 (2, 'Below average performance, struggles with heavy tasks.', 5500.00, 4, 4, '2024-03-04 10:30:00'),
