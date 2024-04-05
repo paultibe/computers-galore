@@ -212,6 +212,13 @@ INSERT INTO Monitor (Brand, Model, RefreshRate, Size, Resolution) VALUES
 ('BrandP', 'ModelP', 120, 24.0, '2560x1440'),
 ('BrandQ', 'ModelQ', 240, 27.0, '1920x1080');
 
+INSERT INTO AssembledIn (Brand, AssembledIn) VALUES
+('Dell', 'China'),
+('Apple', 'United States'),
+('Samsung', 'South Korea'),
+('Lenovo', 'China'),
+('Sony', 'Japan');
+
 INSERT INTO BrandAssembles (Brand, AssembledIn) VALUES
 ('Dell', 'China'),
 ('Apple', 'USA'),
