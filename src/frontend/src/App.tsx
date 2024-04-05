@@ -7,11 +7,8 @@ import "./App.css";
 // Junsu loves modals
 import SignUpModal from "./pages/SignUpModal";
 import SignInModal from "./pages/SignInModal";
+import Aggregate from "./pages/aggregate";
 import DeleteUserModal from "./pages/DeleteUserModal";
-
-function ComparePage() {
-    return <div>Compare Page</div>;
-}
 
 function Home() {
     const BE_BASE_URL = "http://192.9.242.103:8000";
@@ -216,18 +213,18 @@ function Home() {
         </div>
     );
 }
-
+// specifies mappings between paths and components.
 function App() {
-    return (
-        <Router>
-            <Routes>
-                <Route index element={<Home />} />
-                <Route path="search" element={<SearchPage />} />
-                <Route path="results" element={<ResultsPage result={null} />} />
-                <Route path="compare" element={<ComparePage />} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <Router>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="search" element={<SearchPage />} />
+        <Route path="results" element={<ResultsPage result={null} />} />
+        <Route path="aggregate" element={<Aggregate />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
