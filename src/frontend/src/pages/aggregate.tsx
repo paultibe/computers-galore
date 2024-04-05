@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BE_BASE_URL } from "../constants";
 import {
   Table,
   TableBody,
@@ -16,17 +17,17 @@ function Aggregate() {
   const [lastAction, setLastAction] = useState(""); // state to track the last action
 
   const fetchCountByBrand = async () => {
-    await fetchData("http://127.0.0.1:8000/getCountByBrand");
+    await fetchData(`${BE_BASE_URL}/getCountByBrand`);
     setLastAction("countByBrand");
   };
 
   const fetchAvgPrice = async () => {
-    await fetchData("http://127.0.0.1:8000/getAvgPrice");
+    await fetchData(`${BE_BASE_URL}/getAvgPrice`);
     setLastAction("avgPrice");
   };
 
   const fetchBestBrands = async () => {
-    await fetchData("http://127.0.0.1:8000/getBestBrands");
+    await fetchData(`${BE_BASE_URL}/getBestBrands`);
     setLastAction("bestBrands");
   };
 
