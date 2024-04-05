@@ -77,7 +77,7 @@ CREATE TABLE BrandAssembles (
 CREATE TABLE Computer (
     Id SERIAL PRIMARY KEY,
     Brand VARCHAR(127),
-    Price DECIMAL(5, 2) CHECK (Price BETWEEN 0.00 AND 999.99),
+    Price DECIMAL(7, 2) CHECK (Price BETWEEN 0.00 AND 99999.99),
     AssembledIn VARCHAR(127),
     CpuId BIGINT UNSIGNED,
     GpuId BIGINT UNSIGNED,
@@ -94,7 +94,7 @@ CREATE TABLE PerformanceReview (
     Id SERIAL PRIMARY KEY,
     Rating INT CHECK (Rating BETWEEN 1 AND 5),
     Description VARCHAR(2048),
-    BenchMark DECIMAL(5, 2) CHECK (BenchMark BETWEEN 0.00 AND 999.99),
+    BenchMark DECIMAL(8, 2) CHECK (BenchMark BETWEEN 0.00 AND 999999.99),
     UserId BIGINT UNSIGNED,
     ComputerId BIGINT UNSIGNED,
     Date DATETIME,
@@ -159,9 +159,8 @@ CREATE TABLE Compares (
 
 CREATE TABLE Endorses (
     StoreAddress VARCHAR(255),
-    ReviewId BIGINT UNSIGNED,
-    FOREIGN KEY (StoreAddress) REFERENCES ComputerStore(Address),
-    FOREIGN KEY (ReviewId) REFERENCES PerformanceReview(Id)
+    ReviewId BIGINT UNSIGNED,  -- Can be PerformanceReview, DesignReview, or SatisfactionReview
+    FOREIGN KEY (StoreAddress) REFERENCES ComputerStore(Address)
 );
 
 INSERT INTO User (Name, Email, FirstLoginDate) VALUES
@@ -193,11 +192,11 @@ INSERT INTO Cpu (Model, ClockSpeed, CoreCount, Generation) VALUES
 ('Core i9', 4.0, 8, 11);
 
 INSERT INTO Gpu (Brand, Model, Memory, ClockSpeed) VALUES
-('NVIdIA', 'RTX 3080', 10, 1.7),
-('NVIdIA', 'RTX 3070', 8, 1.5),
+('Nvidia', 'RTX 3080', 10, 1.7),
+('Nvidia', 'RTX 3070', 8, 1.5),
 ('AMD', 'Radeon RX 6800', 16, 1.8),
 ('AMD', 'Radeon RX 6700 XT', 12, 1.6),
-('NVIdIA', 'RTX 3060', 12, 1.4);
+('Nvidia', 'RTX 3060', 12, 1.4);
 
 INSERT INTO Storage (Brand, Model, Capacity, Type) VALUES
 ('BrandX', 'ModelX1', 256, 'SSD'),
@@ -212,6 +211,13 @@ INSERT INTO Monitor (Brand, Model, RefreshRate, Size, Resolution) VALUES
 ('BrandO', 'ModelO', 75, 21.5, '1920x1080'),
 ('BrandP', 'ModelP', 120, 24.0, '2560x1440'),
 ('BrandQ', 'ModelQ', 240, 27.0, '1920x1080');
+
+INSERT INTO AssembledIn (Brand, AssembledIn) VALUES
+('Dell', 'China'),
+('Apple', 'United States'),
+('Samsung', 'South Korea'),
+('Lenovo', 'China'),
+('Sony', 'Japan');
 
 INSERT INTO BrandAssembles (Brand, AssembledIn) VALUES
 ('Dell', 'China'),
@@ -229,7 +235,7 @@ INSERT INTO Computer (Brand, Price, AssembledIn, CpuId, GpuId, StorageId, Monito
 
 INSERT INTO PerformanceReview (Rating, Description, BenchMark, UserId, ComputerId, Date) VALUES
 (5, 'Excellent performance and value.', 10000.00, 1, 1, '2024-03-01 09:00:00'),
-(4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03'),
+(4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03-01 22:00:00'),
 (4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03-02 09:30:00'),
 (3, 'Average performance, decent for everyday tasks.', 7000.00, 3, 3, '2024-03-03 10:00:00'),
 (2, 'Below average performance, struggles with heavy tasks.', 5500.00, 4, 4, '2024-03-04 10:30:00'),
