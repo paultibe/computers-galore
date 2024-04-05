@@ -25,6 +25,11 @@ function Aggregate() {
     setLastAction("avgPrice");
   };
 
+  const fetchBestBrands = async () => {
+    await fetchData("http://127.0.0.1:8000/getBestBrands");
+    setLastAction("bestBrands");
+  };
+
   const fetchData = async (url) => {
     try {
       const response = await fetch(url);
@@ -64,13 +69,15 @@ function Aggregate() {
           onClick={fetchAvgPrice}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
         >
-          Group by having
+          Expensive Brands
+          {/* returns brands with average price greater than 2000 */}
         </Button>
         <Button
-          className="bg-gray-500 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed"
-          disabled
+          onClick={fetchBestBrands}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
         >
-          Group by nested
+          Best Brands
+          {/* returns brands with average rating given in satisfaction reviews greater than total average rating*/}
         </Button>
         <Button
           onClick={clearData}
@@ -92,6 +99,9 @@ function Aggregate() {
                 {lastAction === "avgPrice" && (
                   <TableCell align="right">Average Price</TableCell>
                 )}
+                {lastAction === "bestBrands" && (
+                  <TableCell align="right">Average Rating</TableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -108,6 +118,9 @@ function Aggregate() {
                   )}
                   {lastAction === "avgPrice" && (
                     <TableCell align="right">{row["AVG(Price)"]}</TableCell>
+                  )}
+                  {lastAction === "bestBrands" && (
+                    <TableCell align="right">{row["AvgRating"]}</TableCell>
                   )}
                 </TableRow>
               ))}

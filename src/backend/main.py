@@ -134,5 +134,25 @@ async def get_aggregation_having():
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+@app.get("/getBestBrands")
+async def get_aggregation_nested():
+    query = """
+    SELECT C.Brand, AVG(SR.Rating) AS AvgRating
+    FROM Computer C, SatisfactionReview SR
+    WHERE SR.ComputerId = C.Id
+    GROUP BY C.Brand
+    HAVING AVG(SR.Rating) > (
+        SELECT AVG(Rating) 
+        FROM SatisfactionReview)
+    """
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
