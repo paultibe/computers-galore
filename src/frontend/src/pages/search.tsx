@@ -14,8 +14,8 @@ interface CpuBrand {
 const SearchPage = () => {
 
     // CPU States
-    const [cpuBrand, setCpuBrand] = useState<CpuBrand>({AMD: false, Intel: true });
-    const [cpuCoreCount, setCpuCoreCount] = useState<number[]>([1, 16]);
+    const [cpuBrand, setCpuBrand] = useState<CpuBrand>({AMD: true, Intel: true });
+    const [cpuCoreCount, setCpuCoreCount] = useState<number[]>([0, 16]);
     const handleCpuBrandUpdate = (updatedBrand) => {
         setCpuBrand(updatedBrand);
     };
@@ -25,8 +25,8 @@ const SearchPage = () => {
 
 
     // GPU States
-    const [gpuBrand, setGpuBrand] = useState<GpuBrand>({NVIDIA: true, AMD: false });
-    const [gpuMemory, setGpuMemory] = useState<number[]>([0, 8]);
+    const [gpuBrand, setGpuBrand] = useState<GpuBrand>({NVIDIA: true, AMD: true });
+    const [gpuMemory, setGpuMemory] = useState<number[]>([0, 16]);
     const handleGpuBrandUpdate = (updatedBrand) => {
         setGpuBrand(updatedBrand);
     };
@@ -72,30 +72,14 @@ const SearchPage = () => {
     
 
     const handleSearch = () => {
-        console.log(buildUrl())
-
-        const computers = fetchComputers();
-        console.log(computers);
-        
-        const data = [{ id: 1, brand: "Intel", model: "CoffeeLake" }, 
-        { id: 2, brand: "AMD", model: "RYZEN" }, 
-        { id: 3, brand: "AMD", model: "Zen" },
-        { id: 4, brand: "AMD", model: "RYZEN" },
-        { id: 5, brand: "AMD", model: "RYZEN" },
-        { id: 6, brand: "AMD", model: "RYZEN" },
-        { id: 7, brand: "AMD", model: "RYZEN" },
-        { id: 8, brand: "AMD", model: "RYZEN" },
-        { id: 9, brand: "AMD", model: "RYZEN" },
-        { id: 10, brand: "AMD", model: "RYZEN" },
-        { id: 11, brand: "AMD", model: "RYZEN" },
-        { id: 12, brand: "AMD", model: "RYZEN" },
-        { id: 13, brand: "AMD", model: "RYZEN" },
-        { id: 14, brand: "AMD", model: "RYZEN" },
-        { id: 15, brand: "AMD", model: "RYZEN" },
-        { id: 16, brand: "AMD", model: "RYZEN" },
-        { id: 17, brand: "AMD", model: "RYZEN" },
-        { id: 18, brand: "AMD", model: "RYZEN" },];
-        navigate('/results', {state: {data}});
+        fetchComputers()
+        .then(computers => {
+            console.log(computers);
+            navigate('/results', { state: { data: computers } });
+        })
+        .catch(error => {
+            console.error('Error fetching computers:', error);
+        });
       };
 
     return (

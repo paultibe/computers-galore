@@ -133,7 +133,6 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
     gpuBrands_query = ["'" + brand + "'" for brand in gpuBrands]
     gpuBrands = ", ".join(gpuBrands_query)
 
-    print(cpuBrands, gpuBrands)
 
     filter_query = """
     SELECT C.Id, C.Brand, C.Price, C.AssembledIn
@@ -147,11 +146,11 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
         AND Gpu.Brand IN ({})
         AND Gpu.Memory BETWEEN {} AND {} ; 
     """.format(cpuBrands, minCpuCoreCount, maxCpuCoreCount, gpuBrands, minGpuMemory, maxGpuMemory)
-    print(filter_query)
+
+
     try:
         results = await db.fetch_all(query=filter_query )
         formatted_results = []
-        print(results)
         if results:
             for row in results:
                 computer_data = {

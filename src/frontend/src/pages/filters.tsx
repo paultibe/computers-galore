@@ -16,8 +16,8 @@ const CpuFilters = ({onUpdateBrand, onUpdateCoreCount} ) => {
     const [isExpanded, setExpanded] = useState(false);
     const {getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
-    const [brand, setBrand] = useState({AMD: false, Intel: true });
-    const [coreCount, setCoreCount] = useState<number[]>([1, 16]);
+    const [brand, setBrand] = useState({AMD: true, Intel: true });
+    const [coreCount, setCoreCount] = useState<number[]>([0, 16]);
 
     const handleBrand = (event: { target: { name: any; checked: any; }; }) => {
         setBrand(prevState => ({
@@ -99,8 +99,8 @@ const GpuFilters = ({ onUpdateBrand, onUpdateMemory }) => {
     const [isExpanded, setExpanded] = useState(false);
     const {getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
-    const [brand, setBrand] = useState({NVIDIA: true, AMD: false });
-    const [memory, setMemory] = useState<number[]>([0, 8]);
+    const [brand, setBrand] = useState({NVIDIA: true, AMD: true });
+    const [memory, setMemory] = useState<number[]>([0, 16]);
 
     const handleBrand = (event: { target: { name: any; checked: any; }; }) => {
         setBrand(prevState => ({
