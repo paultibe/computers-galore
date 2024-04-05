@@ -125,9 +125,13 @@ async def delete_user(user_email: UserEmail):
     
 @app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
 async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
-    # cpuBrands = cpuBrands.split(",")
-    # gpuBrands = gpuBrands.split(",")
-    
+    cpuBrands = cpuBrands.split(",")
+    cpuBrands_query = ["'" + brand + "'" for brand in cpuBrands]
+    cpuBrands = ", ".join(cpuBrands_query)
+    gpuBrands = gpuBrands.split(",")
+    gpuBrands_query = ["'" + brand + "'" for brand in gpuBrands]
+    gpuBrands = ", ".join(gpuBrands_query)
+
     filter_query = """
     SELECT C.Id, C.Brand, C.Price, C.AssembledIn
     FROM Computer C
@@ -140,6 +144,7 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
         AND Gpu.Brand IN (:gpuBrands)
         AND Gpu.Memory BETWEEN :minGpuMemory AND :maxGpuMemory ;
     """
+    print(filter_query)
     try:
         results = await db.execute(query=filter_query, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
         formatted_results = []
