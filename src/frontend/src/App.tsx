@@ -5,7 +5,7 @@ import ResultsPage from "./pages/results";
 import "./App.css";
 import SignUpModal from "./pages/SignUpModal";
 import SignInModal from "./pages/SignInModal";
-import Aggregate from "./pages/aggregate";
+import Aggregate from "./pages/countByBrand";
 
 function Home() {
   const BE_BASE_URL = "http://192.9.242.103:8000";

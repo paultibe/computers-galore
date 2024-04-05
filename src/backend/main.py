@@ -101,12 +101,29 @@ async def check_user(user_email: UserEmail):
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
-@app.get("/getAggregation")
+@app.get("/getCountByBrand")
 async def get_aggregation():
     query = """
     SELECT Brand, COUNT(*) 
     FROM Computer
     GROUP BY Brand
+    """
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
+
+@app.get("/getAvgPrice")
+async def get_aggregation_having():
+    query = """
+    SELECT Brand, AVG(Price)
+    FROM Computer
+    GROUP BY Brand
+    HAVING AVG(Price) > 2000
     """
     try:
         results = await db.fetch_all(query)
