@@ -163,8 +163,9 @@ const ResultsPage = (props: any) => {
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
       <TableHead>
           <TableRow>
-            <StyledTableCell>Model</StyledTableCell>
-            <StyledTableCell align="right">Brand</StyledTableCell>
+            <StyledTableCell>Brand</StyledTableCell>
+            <StyledTableCell align="right">Assembled In</StyledTableCell>
+            <StyledTableCell align="right">Price ($)</StyledTableCell>
           </TableRow>
         </TableHead>
         
@@ -175,10 +176,13 @@ const ResultsPage = (props: any) => {
             ).map((row) => (
             <TableRow hover key={row.id} onClick={handleClickOpen}>
                 <TableCell component="th" scope="row">
-                {row.model}
+                {row.brand}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                {row.brand}
+                {row.assembledIn}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                {row.price}
                 </TableCell>
             </TableRow>
             ))}

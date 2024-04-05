@@ -16,7 +16,10 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:8000",
+    "http://localhost:5173",
     "http://localhost:8000",
+    "http://localhost:5173",
     "http://192.9.242.103:8000"
 ]
 
@@ -44,7 +47,7 @@ async def shutdown():
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {"junsu and john": "are cracked programmers"}
 
 
 class UserSignup(BaseModel):
@@ -108,6 +111,58 @@ async def check_user(user_email: UserEmail):
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+@app.get("/getCountByBrand")
+async def get_aggregation():
+    query = """
+    SELECT Brand, COUNT(*) 
+    FROM Computer
+    GROUP BY Brand
+    """
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
+
+@app.get("/getAvgPrice")
+async def get_aggregation_having():
+    query = """
+    SELECT Brand, AVG(Price)
+    FROM Computer
+    GROUP BY Brand
+    HAVING AVG(Price) > 2000
+    """
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
+
+@app.get("/getBestBrands")
+async def get_aggregation_nested():
+    query = """
+    SELECT C.Brand, AVG(SR.Rating) AS AvgRating
+    FROM Computer C, SatisfactionReview SR
+    WHERE SR.ComputerId = C.Id
+    GROUP BY C.Brand
+    HAVING AVG(SR.Rating) > (
+        SELECT AVG(Rating) 
+        FROM SatisfactionReview)
+    """
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
 
 @app.delete("/deleteUser")
 async def delete_user(user_email: UserEmail):
@@ -125,24 +180,30 @@ async def delete_user(user_email: UserEmail):
     
 @app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
 async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
-    # cpuBrands = cpuBrands.split(",")
-    # gpuBrands = gpuBrands.split(",")
-    
+    cpuBrands = cpuBrands.split("1")
+    cpuBrands_query = ["'" + brand + "'" for brand in cpuBrands]
+    cpuBrands = ", ".join(cpuBrands_query)
+    gpuBrands = gpuBrands.split("1")
+    gpuBrands_query = ["'" + brand + "'" for brand in gpuBrands]
+    gpuBrands = ", ".join(gpuBrands_query)
+
+
     filter_query = """
-    SELECT C.Id, C.Brand, C.Price, BA.AssembledIn
+    SELECT C.Id, C.Brand, C.Price, C.AssembledIn
     FROM Computer C
     JOIN Cpu ON C.CpuId = Cpu.Id
     JOIN Gpu ON C.GpuId = Gpu.Id
     JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
-    JOIN BrandAssembles BA on C.Brand = BA.Brand
     WHERE 
-        CpuBrand.Brand IN (:cpuBrands)
-        AND Cpu.CoreCount BETWEEN :minCpuCoreCount AND :maxCpuCoreCount
-        AND Gpu.Brand IN (:gpuBrands)
-        AND Gpu.Memory BETWEEN :minGpuMemory AND :maxGpuMemory ;
-    """
+        CpuBrand.Brand IN ({})
+        AND Cpu.CoreCount BETWEEN {} AND {}
+        AND Gpu.Brand IN ({})
+        AND Gpu.Memory BETWEEN {} AND {} ; 
+    """.format(cpuBrands, minCpuCoreCount, maxCpuCoreCount, gpuBrands, minGpuMemory, maxGpuMemory)
+
+
     try:
-        results = await db.execute(query=filter_query, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
+        results = await db.fetch_all(query=filter_query )
         formatted_results = []
         if results:
             for row in results:
@@ -153,6 +214,8 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
                     'assembledIn': row[3]
                 }
                 formatted_results.append(computer_data)
+        else:
+            print("No results found.")
         return formatted_results
     except Exception as e:
         raise HTTPException(
