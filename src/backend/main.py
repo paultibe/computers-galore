@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 import uvicorn
 
@@ -29,22 +30,27 @@ app.add_middleware(
 
 load_dotenv()
 
+
 @app.on_event("startup")
 async def startup():
     await connect_db()
     await init_tables()
 
+
 @app.on_event("shutdown")
 async def shutdown():
     await disconnect_db()
+
 
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
 
+
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
+
 
 @app.post("/signup")
 async def signup_user(user: UserSignup):
@@ -78,11 +84,14 @@ async def signup_user(user: UserSignup):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while signing up: {str(e)}"
         )
+
+
 class UserEmail(BaseModel):
     email: str
 
+
 @app.post("/checkUserExists")
-async def check_user(user_email: UserEmail): 
+async def check_user(user_email: UserEmail):
     email = user_email.email
     print(f"Checking if user exists with email: {email}")
     q = "SELECT Email FROM User WHERE Email = :email"
@@ -99,11 +108,12 @@ async def check_user(user_email: UserEmail):
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+
 @app.delete("/deleteUser")
 async def delete_user(user_email: UserEmail):
     email = user_email.email
     delete_query = "DELETE FROM User WHERE Email = :email"
-    
+
     try:
         await db.execute(query=delete_query, values={"email": email})
         return {"detail": "User deleted successfully."}
@@ -111,6 +121,97 @@ async def delete_user(user_email: UserEmail):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while deleting the user: {str(e)}"
+        )
+    
+@app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
+async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
+    # cpuBrands = cpuBrands.split(",")
+    # gpuBrands = gpuBrands.split(",")
+    
+    filter_query = """
+    SELECT C.Id, C.Brand, C.Price, BA.AssembledIn
+    FROM Computer C
+    JOIN Cpu ON C.CpuId = Cpu.Id
+    JOIN Gpu ON C.GpuId = Gpu.Id
+    JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
+    JOIN BrandAssembles BA on C.Brand = BA.Brand
+    WHERE 
+        CpuBrand.Brand IN (:cpuBrands)
+        AND Cpu.CoreCount BETWEEN :minCpuCoreCount AND :maxCpuCoreCount
+        AND Gpu.Brand IN (:gpuBrands)
+        AND Gpu.Memory BETWEEN :minGpuMemory AND :maxGpuMemory ;
+    """
+    try:
+        results = await db.execute(query=filter_query, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
+        formatted_results = []
+        if results:
+            for row in results:
+                computer_data = {
+                    'id': row[0],
+                    'brand': row[1],
+                    'price': row[2],
+                    'assembledIn': row[3]
+                }
+                formatted_results.append(computer_data)
+        return formatted_results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while filtering computers: {str(e)}"
+        )
+
+
+
+
+class Review(BaseModel):
+    review_type: str
+    description: str
+    rating: int
+
+
+@app.post("/userWroteAllReviews")
+async def get_user_wrote_all_reviews(user_email: UserEmail):
+    email = user_email.email
+    division_query = \
+        """
+    SELECT * FROM User U
+    WHERE U.Email = :email AND NOT EXISTS (
+        (SELECT 'Performance' AS review_type 
+         UNION 
+         SELECT 'Satisfaction' 
+         UNION 
+         SELECT 'Design') 
+
+        EXCEPT
+
+        (SELECT 'Performance' 
+         FROM PerformanceReview PR 
+         WHERE PR.UserId = U.Id
+
+         UNION 
+
+         SELECT 'Satisfaction' 
+         FROM SatisfactionReview SR 
+         WHERE SR.UserId = U.Id
+
+         UNION 
+
+         SELECT 'Design' 
+         FROM DesignReview DR 
+         WHERE DR.UserId = U.Id)
+    );
+    """
+
+    try:
+        user = await db.fetch_one(query=division_query, values={"email": email})
+        if user:
+            return JSONResponse(content={"hasWrittenAllReviews": True})
+        else:
+            return JSONResponse(content={"hasWrittenAllReviews": False})
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"An error occurred: {str(e)}"
         )
 
 if __name__ == "__main__":
