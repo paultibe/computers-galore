@@ -193,11 +193,11 @@ INSERT INTO Cpu (Model, ClockSpeed, CoreCount, Generation) VALUES
 ('Core i9', 4.0, 8, 11);
 
 INSERT INTO Gpu (Brand, Model, Memory, ClockSpeed) VALUES
-('NVIdIA', 'RTX 3080', 10, 1.7),
-('NVIdIA', 'RTX 3070', 8, 1.5),
+('Nvidia', 'RTX 3080', 10, 1.7),
+('Nvidia', 'RTX 3070', 8, 1.5),
 ('AMD', 'Radeon RX 6800', 16, 1.8),
 ('AMD', 'Radeon RX 6700 XT', 12, 1.6),
-('NVIdIA', 'RTX 3060', 12, 1.4);
+('Nvidia', 'RTX 3060', 12, 1.4);
 
 INSERT INTO Storage (Brand, Model, Capacity, Type) VALUES
 ('BrandX', 'ModelX1', 256, 'SSD'),
