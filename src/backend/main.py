@@ -152,6 +152,8 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
                     'assembledIn': row[3]
                 }
                 formatted_results.append(computer_data)
+        else:
+            print("No results found.")
         return formatted_results
     except Exception as e:
         raise HTTPException(
