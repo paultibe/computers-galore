@@ -15,6 +15,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:8000",
     "http://localhost:8000",
     "http://localhost:5173",
     "http://192.9.242.103:8000"
@@ -102,7 +103,15 @@ async def check_user(user_email: UserEmail):
 
 @app.get("/getAggregation")
 async def get_aggregation():
-    return {"this is a ": "test"}
+    query = "SELECT * FROM Computer"
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while checking user: {str(e)}"
+        )
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
