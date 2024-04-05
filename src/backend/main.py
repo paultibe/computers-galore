@@ -125,12 +125,14 @@ async def delete_user(user_email: UserEmail):
     
 @app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
 async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
-    cpuBrands = cpuBrands.split(",")
+    cpuBrands = cpuBrands.split("1")
     cpuBrands_query = ["'" + brand + "'" for brand in cpuBrands]
     cpuBrands = ", ".join(cpuBrands_query)
-    gpuBrands = gpuBrands.split(",")
+    gpuBrands = gpuBrands.split("1")
     gpuBrands_query = ["'" + brand + "'" for brand in gpuBrands]
     gpuBrands = ", ".join(gpuBrands_query)
+
+    print(cpuBrands, gpuBrands)
 
     filter_query = """
     SELECT C.Id, C.Brand, C.Price, C.AssembledIn

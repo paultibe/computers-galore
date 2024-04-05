@@ -43,11 +43,11 @@ const SearchPage = () => {
 
         // CPU Filters
         const selectedCpuBrands = Object.keys(cpuBrand).filter(key => cpuBrand[key]);
-        let cpuUrl = `${selectedCpuBrands.join(',')}/${cpuCoreCount[0]}/${cpuCoreCount[1]}`;
+        let cpuUrl = `${selectedCpuBrands.join('1')}/${cpuCoreCount[0]}/${cpuCoreCount[1]}`;
 
         // GPU Filters
         const selectedGpuBrands = Object.keys(gpuBrand).filter(key => gpuBrand[key]);
-        let gpuUrl = `${selectedGpuBrands.join(',')}/${gpuMemory[0]}/${gpuMemory[1]}`;
+        let gpuUrl = `${selectedGpuBrands.join('1')}/${gpuMemory[0]}/${gpuMemory[1]}`;
 
         return `${url}/${cpuUrl}/${gpuUrl}`;
 
