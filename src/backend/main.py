@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 import uvicorn
 
@@ -16,6 +17,7 @@ origins = [
     "http://localhost:3000",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
+    "http://localhost:5173",
     "http://localhost:8000",
     "http://localhost:5173",
     "http://192.9.242.103:8000"
@@ -31,22 +33,27 @@ app.add_middleware(
 
 load_dotenv()
 
+
 @app.on_event("startup")
 async def startup():
     await connect_db()
     await init_tables()
 
+
 @app.on_event("shutdown")
 async def shutdown():
     await disconnect_db()
+
 
 @app.get("/")
 async def read_root():
     return {"junsu and john": "are cracked programmers"}
 
+
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
+
 
 @app.post("/signup")
 async def signup_user(user: UserSignup):
@@ -80,11 +87,14 @@ async def signup_user(user: UserSignup):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while signing up: {str(e)}"
         )
+
+
 class UserEmail(BaseModel):
     email: str
 
+
 @app.post("/checkUserExists")
-async def check_user(user_email: UserEmail): 
+async def check_user(user_email: UserEmail):
     email = user_email.email
     print(f"Checking if user exists with email: {email}")
     q = "SELECT Email FROM User WHERE Email = :email"
@@ -152,6 +162,118 @@ async def get_aggregation_nested():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while checking user: {str(e)}"
+
+@app.delete("/deleteUser")
+async def delete_user(user_email: UserEmail):
+    email = user_email.email
+    delete_query = "DELETE FROM User WHERE Email = :email"
+
+    try:
+        await db.execute(query=delete_query, values={"email": email})
+        return {"detail": "User deleted successfully."}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while deleting the user: {str(e)}"
+        )
+    
+@app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
+async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
+    cpuBrands = cpuBrands.split("1")
+    cpuBrands_query = ["'" + brand + "'" for brand in cpuBrands]
+    cpuBrands = ", ".join(cpuBrands_query)
+    gpuBrands = gpuBrands.split("1")
+    gpuBrands_query = ["'" + brand + "'" for brand in gpuBrands]
+    gpuBrands = ", ".join(gpuBrands_query)
+
+
+    filter_query = """
+    SELECT C.Id, C.Brand, C.Price, C.AssembledIn
+    FROM Computer C
+    JOIN Cpu ON C.CpuId = Cpu.Id
+    JOIN Gpu ON C.GpuId = Gpu.Id
+    JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
+    WHERE 
+        CpuBrand.Brand IN ({})
+        AND Cpu.CoreCount BETWEEN {} AND {}
+        AND Gpu.Brand IN ({})
+        AND Gpu.Memory BETWEEN {} AND {} ; 
+    """.format(cpuBrands, minCpuCoreCount, maxCpuCoreCount, gpuBrands, minGpuMemory, maxGpuMemory)
+
+
+    try:
+        results = await db.fetch_all(query=filter_query )
+        formatted_results = []
+        if results:
+            for row in results:
+                computer_data = {
+                    'id': row[0],
+                    'brand': row[1],
+                    'price': row[2],
+                    'assembledIn': row[3]
+                }
+                formatted_results.append(computer_data)
+        else:
+            print("No results found.")
+        return formatted_results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while filtering computers: {str(e)}"
+        )
+
+
+
+
+class Review(BaseModel):
+    review_type: str
+    description: str
+    rating: int
+
+
+@app.post("/userWroteAllReviews")
+async def get_user_wrote_all_reviews(user_email: UserEmail):
+    email = user_email.email
+    division_query = \
+        """
+    SELECT * FROM User U
+    WHERE U.Email = :email AND NOT EXISTS (
+        (SELECT 'Performance' AS review_type 
+         UNION 
+         SELECT 'Satisfaction' 
+         UNION 
+         SELECT 'Design') 
+
+        EXCEPT
+
+        (SELECT 'Performance' 
+         FROM PerformanceReview PR 
+         WHERE PR.UserId = U.Id
+
+         UNION 
+
+         SELECT 'Satisfaction' 
+         FROM SatisfactionReview SR 
+         WHERE SR.UserId = U.Id
+
+         UNION 
+
+         SELECT 'Design' 
+         FROM DesignReview DR 
+         WHERE DR.UserId = U.Id)
+    );
+    """
+
+    try:
+        user = await db.fetch_one(query=division_query, values={"email": email})
+        if user:
+            return JSONResponse(content={"hasWrittenAllReviews": True})
+        else:
+            return JSONResponse(content={"hasWrittenAllReviews": False})
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"An error occurred: {str(e)}"
         )
 
 if __name__ == "__main__":
