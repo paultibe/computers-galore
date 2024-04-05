@@ -119,12 +119,11 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
     # gpuBrands = gpuBrands.split(",")
     
     filter_query = """
-    SELECT C.Id, C.Brand, C.Price, BA.AssembledIn
+    SELECT C.Id, C.Brand, C.Price, C.AssembledIn
     FROM Computer C
     JOIN Cpu ON C.CpuId = Cpu.Id
     JOIN Gpu ON C.GpuId = Gpu.Id
     JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
-    JOIN BrandAssembles BA on C.Brand = BA.Brand
     WHERE 
         CpuBrand.Brand IN (:cpuBrands)
         AND Cpu.CoreCount BETWEEN :minCpuCoreCount AND :maxCpuCoreCount
