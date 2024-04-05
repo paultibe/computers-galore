@@ -162,6 +162,7 @@ async def get_aggregation_nested():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while checking user: {str(e)}"
+        )
 
 @app.delete("/deleteUser")
 async def delete_user(user_email: UserEmail):
