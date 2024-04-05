@@ -103,7 +103,11 @@ async def check_user(user_email: UserEmail):
 
 @app.get("/getAggregation")
 async def get_aggregation():
-    query = "SELECT * FROM Computer"
+    query = """
+    SELECT Brand, COUNT(*) 
+    FROM Computer
+    GROUP BY Brand
+    """
     try:
         results = await db.fetch_all(query)
         return results
