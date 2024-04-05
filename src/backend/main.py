@@ -16,6 +16,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:5173",
+    "http://localhost:5173",
     "http://localhost:8000",
     "http://192.9.242.103:8000"
 ]
@@ -141,15 +142,16 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
     JOIN Gpu ON C.GpuId = Gpu.Id
     JOIN CpuBrand ON Cpu.Model = CpuBrand.Model
     WHERE 
-        CpuBrand.Brand IN (:cpuBrands)
-        AND Cpu.CoreCount BETWEEN :minCpuCoreCount AND :maxCpuCoreCount
-        AND Gpu.Brand IN (:gpuBrands)
-        AND Gpu.Memory BETWEEN :minGpuMemory AND :maxGpuMemory ;
-    """
+        CpuBrand.Brand IN ({})
+        AND Cpu.CoreCount BETWEEN {} AND {}
+        AND Gpu.Brand IN ({})
+        AND Gpu.Memory BETWEEN {} AND {} ; 
+    """.format(cpuBrands, minCpuCoreCount, maxCpuCoreCount, gpuBrands, minGpuMemory, maxGpuMemory)
     print(filter_query)
     try:
-        results = await db.execute(query=filter_query, values={"cpuBrands": cpuBrands, "minCpuCoreCount": minCpuCoreCount, "maxCpuCoreCount": maxCpuCoreCount, "gpuBrands": gpuBrands, "minGpuMemory": minGpuMemory, "maxGpuMemory": maxGpuMemory})
+        results = await db.fetch_all(query=filter_query )
         formatted_results = []
+        print(results)
         if results:
             for row in results:
                 computer_data = {
