@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 import uvicorn
 
@@ -29,22 +30,27 @@ app.add_middleware(
 
 load_dotenv()
 
+
 @app.on_event("startup")
 async def startup():
     await connect_db()
     await init_tables()
 
+
 @app.on_event("shutdown")
 async def shutdown():
     await disconnect_db()
+
 
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
 
+
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
+
 
 @app.post("/signup")
 async def signup_user(user: UserSignup):
@@ -78,11 +84,14 @@ async def signup_user(user: UserSignup):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while signing up: {str(e)}"
         )
+
+
 class UserEmail(BaseModel):
     email: str
 
+
 @app.post("/checkUserExists")
-async def check_user(user_email: UserEmail): 
+async def check_user(user_email: UserEmail):
     email = user_email.email
     print(f"Checking if user exists with email: {email}")
     q = "SELECT Email FROM User WHERE Email = :email"
@@ -99,11 +108,12 @@ async def check_user(user_email: UserEmail):
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+
 @app.delete("/deleteUser")
 async def delete_user(user_email: UserEmail):
     email = user_email.email
     delete_query = "DELETE FROM User WHERE Email = :email"
-    
+
     try:
         await db.execute(query=delete_query, values={"email": email})
         return {"detail": "User deleted successfully."}
@@ -113,19 +123,25 @@ async def delete_user(user_email: UserEmail):
             detail=f"An error occurred while deleting the user: {str(e)}"
         )
 
+
 class Review(BaseModel):
     review_type: str
     description: str
     rating: int
 
+
 @app.post("/userWroteAllReviews")
 async def get_user_wrote_all_reviews(user_email: UserEmail):
     email = user_email.email
     division_query = \
-    """
+        """
     SELECT * FROM User U
     WHERE U.Email = :email AND NOT EXISTS (
-        (SELECT 'Performance' AS review_type UNION SELECT 'Satisfaction' UNION SELECT 'Design') 
+        (SELECT 'Performance' AS review_type 
+         UNION 
+         SELECT 'Satisfaction' 
+         UNION 
+         SELECT 'Design') 
 
         EXCEPT
 
@@ -146,12 +162,13 @@ async def get_user_wrote_all_reviews(user_email: UserEmail):
          WHERE DR.UserId = U.Id)
     );
     """
+
     try:
         user = await db.fetch_one(query=division_query, values={"email": email})
         if user:
-            return {"message": "User has wrote reviews across all types."}
+            return JSONResponse(content={"hasWrittenAllReviews": True})
         else:
-            return {"message": "User didn't write all types of reviews."}
+            return JSONResponse(content={"hasWrittenAllReviews": False})
     except Exception as e:
         raise HTTPException(
             status_code=400,
