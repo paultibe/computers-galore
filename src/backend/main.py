@@ -288,6 +288,7 @@ async def addComputer(computerData: Computer):
       Generation = :generation
       """
       cpu_id = await db.fetch_one(query=cpu_duplicate_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
+      cpu_id = cpu_id[0]
       if not cpu_id:
           cpu_query = "INSERT INTO Cpu (Model, ClockSpeed, CoreCount, Generation) VALUES (:model, :clock_speed, :core_count, :generation)"
           await db.execute(query=cpu_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
@@ -304,6 +305,7 @@ async def addComputer(computerData: Computer):
       ClockSpeed = :clock_speed 
       """
       gpu_id = await db.fetch_one(query=gpu_duplicate_query, values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
+      gpu_id = gpu_id[0]
       if not gpu_id:
           gpu_query = "INSERT INTO Gpu (Brand, Model, Memory, ClockSpeed) VALUES (:brand, :model, :memory, :clock_speed)"
           await db.execute(query=gpu_query,  values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
@@ -325,6 +327,7 @@ async def addComputer(computerData: Computer):
       computer_id = await  db.fetch_one(query=computer_duplicate_query, 
                                         values={"brand":computerData.brand, "price": computerData.price, 
                                                 "assembled_in": computerData.assembledIn, "cpu_id": cpu_id, "gpu_id": gpu_id})
+      computer_id = computer_id[0]
       if not computer_id:
           computer_query = "INSERT INTO Computer (Brand, Price, AssembledIn, CpuId, GpuId, StorageId, MonitorId) VALUES (:brand, :price, :assembled_in, :cpu_id, :gpu_id, 1, 1)"
           await db.execute(query = computer_query, values={"brand":computerData.brand, "price": computerData.price, 
