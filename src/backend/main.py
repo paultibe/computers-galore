@@ -293,7 +293,7 @@ async def fetch_user_reviews(user_email: UserEmail):
     q = \
         """
         SELECT Id, Description, Rating, Date 
-        FROM SatisfactionReview 
+        FROM DesignReview
         WHERE UserId = :user_id
         """
     design_reviews = await db.fetch_all(q, values={"user_id": user_id}

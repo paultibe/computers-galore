@@ -168,7 +168,8 @@ INSERT INTO User (Name, Email, FirstLoginDate) VALUES
 ('Jane Smith', 'jane.smith@example.com', '2024-02-28 09:00:00'),
 ('Alex Johnson', 'alex.johnson@example.com', '2024-01-15 09:00:00'),
 ('Maria Garcia', 'maria.garcia@example.com', '2023-12-10 09:00:00'),
-('Paul Maximus', 'paul.maximus@example.com', '2023-12-15 09:00:00');
+('Paul Maximus', 'paul.maximus@example.com', '2023-12-15 09:00:00'),
+('test-user', 'test@test.com', '2023-12-15 09:00:00');
 
 INSERT INTO PremiumUser (UserId, ExpiryDate) VALUES
 (1, '2025-03-01'),
@@ -239,6 +240,7 @@ INSERT INTO PerformanceReview (Rating, Description, BenchMark, UserId, ComputerI
 (4, 'Good performance for the price.', 8500.00, 2, 2, '2024-03-02 09:30:00'),
 (3, 'Average performance, decent for everyday tasks.', 7000.00, 3, 3, '2024-03-03 10:00:00'),
 (2, 'Below average performance, struggles with heavy tasks.', 5500.00, 4, 4, '2024-03-04 10:30:00'),
+(2, 'TEST PERFORMANCE REVIEW', 5500.00, 6, 4, '2024-03-04 10:30:00'),
 (1, 'Poor performance, not recommended for modern applications.', 4000.00, 5, 5, '2024-03-05 11:00:00');
 
 INSERT INTO DesignReview (Rating, Description, UserId, ComputerId, Date) VALUES
@@ -246,9 +248,11 @@ INSERT INTO DesignReview (Rating, Description, UserId, ComputerId, Date) VALUES
 (5, 'Outstanding design and aesthetics.', 2, 3, '2024-03-07 11:00:00'),
 (3, 'Functional design, but nothing special.', 3, 4, '2024-03-08 12:00:00'),
 (2, 'Design is a bit outdated.', 4, 1, '2024-03-09 13:00:00'),
+(3, 'TEST DESIGN REVIEW', 6, 1, '2024-03-09 13:00:00'),
 (1, 'Unappealing design and poor ergonomics.', 5, 2, '2024-03-10 14:00:00');
 
 INSERT INTO SatisfactionReview (Rating, Description, UserId, ComputerId, Date) VALUES
+(3, 'TEST SATISFACTION REVIEW', 6, 1, '2024-03-09 13:00:00'),
 (4, 'Quite satisfied with the purchase overall.', 1, 1, '2024-03-11 15:00:00'),
 (3, 'Satisfied, but there are some issues.', 1, 2, '2024-03-12 16:00:00'),
 (5, 'Extremely satisfied, exceeded expectations.', 3, 3, '2024-03-13 17:00:00'),

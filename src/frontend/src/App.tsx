@@ -41,34 +41,34 @@ function Home() {
     setViewReviewsModalActive(false); 
     setEditReviewsModalActive(true); 
   };
-  
+
   const fetchReviews = async () => {
-    console.log("Fetching reviews for user:", curUserEmail);
-    if (curUserEmail === "") {
-      alert("Please log in first to view your reviews.");
-      return;
+    if (!curUserEmail) {
+        alert("Please log in first to view your reviews.");
+        return;
     }
     
     try {
-      const response = await fetch(`${BE_BASE_URL}/fetchUserReviews`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: curUserEmail }),
-      });
+        const response = await fetch(`${BE_BASE_URL}/fetchUserReviews`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: curUserEmail }),
+        });
 
-      if (!response.ok) {
-        console.log(response.body);
-        throw new Error("Failed to fetch reviews");
-      }
+        if (!response.ok) throw new Error("Failed to fetch reviews");
 
-      const fetchedReviews: Review[] = await response.json();
-      setUserReviews(fetchedReviews);
-      setViewReviewsModalActive(true);
+        const reviewsResponse: { [key: string]: Review[] } = await response.json();
+
+        const flattenedReviews: Review[] = Object.values(reviewsResponse).flat();
+
+        setUserReviews(flattenedReviews);
+        setViewReviewsModalActive(true);
     } catch (error) {
-      console.error("Error fetching reviews:", error);
-      alert("Failed to fetch your reviews.");
+        console.error("Error fetching reviews:", error);
+        alert("Failed to fetch your reviews.");
     }
   };
+
 
   const handleSignUp = () => {
     console.log("Sign up clicked");
