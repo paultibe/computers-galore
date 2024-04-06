@@ -49,7 +49,6 @@ async def shutdown():
 async def read_root():
     return {"junsu and john": "are cracked programmers"}
 
-
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
@@ -223,6 +222,24 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
             detail=f"An error occurred while filtering computers: {str(e)}"
         )
 
+@app.get("/getCpuByComputer/{id}") 
+async def get_cpu_by_computer(id: int):
+    query = """
+    SELECT c2.*
+    FROM Computer c, Cpu c2
+    WHERE c.CpuId = c2.Id AND c.Id = :id
+    """
+    try:
+        results = await db.fetch_all(query, values={"id": id})
+        if results is None:
+            raise HTTPException(status_code=404, detail="Computer not found")
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occured when geting CPU information: {str(e)}"
+        )
+
 class Computer(BaseModel):
     brand: str
     price: float
@@ -302,7 +319,6 @@ async def addComputer(computerData: Computer):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while adding computer: {str(e)}"
         )
-
 
 
 class Review(BaseModel):
