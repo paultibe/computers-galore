@@ -9,6 +9,7 @@ import SignUpModal from "./pages/SignUpModal";
 import SignInModal from "./pages/SignInModal";
 import Aggregate from "./pages/aggregate";
 import DeleteUserModal from "./pages/DeleteUserModal";
+import ComputerModal from "./pages/ComputerModal";
 
 function Home() {
   const BE_BASE_URL = "http://192.9.242.103:8000";
@@ -19,6 +20,7 @@ function Home() {
   const [signInModalActive, setSignInModalActive] = useState(false);
   const [deleteModalActive, setDeleteModalActive] = useState(false);
   const [myReviewModalActive, setMyReviewModalActive] = useState(false);
+  const [computerModalActive, setComputerModalActive] = useState(false);
 
   // If user signed in, store email, if empty, user is not signed in
   const [curUserEmail, setCurUserEmail] = useState("");
@@ -163,18 +165,24 @@ function Home() {
     await checkUserAllReviews(curUserEmail);
   };
 
+
   return (
     <div className="text-center mt-10">
       <h1 className="text-3xl font-bold">Computers Galore!</h1>
       <div className="mt-5">
+        <button onClick={() => setComputerModalActive(true)}>Add Computer 🖥️</button>
+        <ComputerModal
+          isOpen={computerModalActive}
+          onClose={()=>setComputerModalActive(false)}
+        />
         <Link to="/search">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
-            Search
+            Search 🧐
           </button>
         </Link>
         <Link to="/aggregate">
           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            Aggregate
+            Aggregate 📊
           </button>
         </Link>
         <button onClick={() => setSignInModalActive(true)}>Log in 🏃</button>

@@ -250,7 +250,7 @@ INSERT INTO DesignReview (Rating, Description, UserId, ComputerId, Date) VALUES
 
 INSERT INTO SatisfactionReview (Rating, Description, UserId, ComputerId, Date) VALUES
 (4, 'Quite satisfied with the purchase overall.', 1, 1, '2024-03-11 15:00:00'),
-(3, 'Satisfied, but there are some issues.', 2, 2, '2024-03-12 16:00:00'),
+(3, 'Satisfied, but there are some issues.', 1, 2, '2024-03-12 16:00:00'),
 (5, 'Extremely satisfied, exceeded expectations.', 3, 3, '2024-03-13 17:00:00'),
 (2, 'Not satisfied, many problems encountered.', 4, 4, '2024-03-14 18:00:00'),
 (1, 'Very unsatisfied, would not recommend.', 5, 5, '2024-03-15 19:00:00');
