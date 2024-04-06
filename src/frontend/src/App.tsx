@@ -9,6 +9,9 @@ import SignUpModal from "./pages/SignUpModal";
 import SignInModal from "./pages/SignInModal";
 import Aggregate from "./pages/aggregate";
 import DeleteUserModal from "./pages/DeleteUserModal";
+import ViewReviewModal from "./pages/ViewReviewModal";
+import EditReviewModal from "./pages/EditReviewModal";
+import { Review } from "./interfaces/Review";
 
 function Home() {
   const BE_BASE_URL = "http://192.9.242.103:8000";
@@ -18,10 +21,54 @@ function Home() {
   const [signUpModalActive, setSignUpModalActive] = useState(false);
   const [signInModalActive, setSignInModalActive] = useState(false);
   const [deleteModalActive, setDeleteModalActive] = useState(false);
-  const [myReviewModalActive, setMyReviewModalActive] = useState(false);
+  const [viewReviewsModalActive, setViewReviewsModalActive] = useState(false);
+  const [editReviewsModalActive, setEditReviewsModalActive] = useState(false);
 
   // If user signed in, store email, if empty, user is not signed in
   const [curUserEmail, setCurUserEmail] = useState("");
+
+  // Fetched user reviews
+  const [userReviews, setUserReviews] = useState<Review[]>([]);
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+
+  const handleOpenViewReviews = async () => {
+    await fetchReviews(); 
+    setViewReviewsModalActive(true);
+  };
+
+  const handleEditReview = (review: Review) => {
+    setSelectedReview(review); 
+    setViewReviewsModalActive(false); 
+    setEditReviewsModalActive(true); 
+  };
+  
+  const fetchReviews = async () => {
+    console.log("Fetching reviews for user:", curUserEmail);
+    if (curUserEmail === "") {
+      alert("Please log in first to view your reviews.");
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${BE_BASE_URL}/fetchUserReviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: curUserEmail }),
+      });
+
+      if (!response.ok) {
+        console.log(response.body);
+        throw new Error("Failed to fetch reviews");
+      }
+
+      const fetchedReviews: Review[] = await response.json();
+      setUserReviews(fetchedReviews);
+      setViewReviewsModalActive(true);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      alert("Failed to fetch your reviews.");
+    }
+  };
 
   const handleSignUp = () => {
     console.log("Sign up clicked");
@@ -205,14 +252,36 @@ function Home() {
           onClose={() => setDeleteModalActive(false)}
           onDeleteUser={handleDeleteUser}
         />
+        <button onClick={handleOpenViewReviews}>View my reviews</button>
+        <ViewReviewModal
+          isOpen={viewReviewsModalActive}
+          reviews={userReviews}
+          onClose={() => setViewReviewsModalActive(false)}
+          onEdit={handleEditReview}
+        />
+        <EditReviewModal
+          isOpen={editReviewsModalActive}
+          review={selectedReview}
+          onSave={(updatedReview) => {
+            const updatedUserReviews = userReviews.map(review => {
+              if (review.id === updatedReview.id) {
+                return updatedReview;
+              }
+              return review;
+            });
+            setUserReviews(updatedUserReviews);
+            setEditReviewsModalActive(false);
+          }}
+          onClose={() => setEditReviewsModalActive(false)}
+        />
         <button onClick={handleAllReviews}>
-          You wrote all types of reviews? 📖
+          You wrote every types of reviews? 📖
         </button>
       </div>
     </div>
   );
 }
-// specifies mappings between paths and components.
+
 function App() {
   return (
     <Router>
