@@ -247,7 +247,7 @@ async def addComputer(computerData: Computer):
       cpu_brand = await db.fetch_one(query=cpu_brand_duplicate_query, values={"model": computerData.cpuModel})
       if not cpu_brand:
           cpu_brand_query = "INSERT INTO CpuBrand (Model, Brand) VALUES (:model, :brand)"
-          await db.execute(query=cpu_brand_query, value={"model": computerData.cpuModel, "brand": computerData.cpuBrand})
+          await db.execute(query=cpu_brand_query, values={"model": computerData.cpuModel, "brand": computerData.cpuBrand})
       
       # Check for duplicate cpu
       cpu_duplicate_query = """

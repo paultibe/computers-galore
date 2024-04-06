@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
+import { BE_BASE_URL } from '../constants';
 
 interface ComputerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (computerData: any) => void;
 }
 
-const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
   const [computerData, setComputerData] = useState({
     brand: '',
     price: '',
@@ -37,6 +37,51 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose, onSubmit
     gpuClockSpeed: ''
   });
 
+  const submitComputer = async () => {
+    console.log("Sign up submitted", { computerData });
+    onClose();
+    await shootComputer();
+  };
+
+  const shootComputer = async () => {
+    const url = `${BE_BASE_URL}/addComputer`;
+    console.log(computerData.brand)
+    const payload = JSON.stringify({
+      brand: computerData.brand,
+      price: parseFloat(computerData.price),
+      assembledIn: computerData.assembledIn,
+      cpuModel: computerData.cpuModel,
+      cpuBrand: computerData.cpuBrand,
+      cpuClockSpeed: parseFloat(computerData.cpuClockSpeed), 
+      cpuGeneration: parseInt(computerData.cpuGeneration), 
+      cpuCoreCount: parseInt(computerData.cpuCoreCount), 
+      gpuBrand: computerData.gpuBrand,
+      gpuModel: computerData.gpuModel,
+      gpuMemory: parseInt(computerData.gpuMemory),
+      gpuClockSpeed: parseFloat(computerData.gpuClockSpeed), 
+    })
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: payload,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log(responseData);
+      alert("Computer Successfully Added");
+    } catch (error) {
+      console.error("Computer addition failed:", error);
+      alert("Addition failed, please contact administrator.");
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setComputerData({ ...computerData, [name]: value });
@@ -45,7 +90,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose, onSubmit
 
   const handleAddComputer = () => {
     if (validateForm()) {
-      onSubmit(computerData);
+      submitComputer();
       onClose();
     }
   };

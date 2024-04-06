@@ -165,35 +165,6 @@ function Home() {
     await checkUserAllReviews(curUserEmail);
   };
 
-  const submitComputer = async (computerData: any) => {
-    console.log("Sign up submitted", { computerData });
-    setComputerModalActive(false);
-    await shootComputer({ computerData });
-  };
-
-  const shootComputer = async (computerData) => {
-    const url = `${BE_BASE_URL}/signup`;
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(computerData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log(responseData);
-      alert("Computer Successfully Added");
-    } catch (error) {
-      console.error("Sign up failed:", error);
-      alert("Addition failed, please contact administrator.");
-    }
-  };
 
   return (
     <div className="text-center mt-10">
@@ -203,7 +174,6 @@ function Home() {
         <ComputerModal
           isOpen={computerModalActive}
           onClose={()=>setComputerModalActive(false)}
-          onSubmit={submitComputer}
         />
         <Link to="/search">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
