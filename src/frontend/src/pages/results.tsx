@@ -25,6 +25,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import CloseIcon from "@mui/icons-material/Close";
+import { BE_BASE_URL } from "../constants";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -185,7 +186,7 @@ const ResultsPage = (props: any) => {
   const handleRowOpen = async (computerId: number) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/getCpuByComputer/${computerId}`
+        `${BE_BASE_URL}/getCpuByComputer/${computerId}`
       );
       const data: CpuData[] = await response.json();
       console.log("this is the data", data);
