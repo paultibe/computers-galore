@@ -150,8 +150,8 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
       isValid = false;
     }
     const gpuClockSpeed = parseFloat(computerData.gpuClockSpeed.trim());
-    if (isNaN(gpuClockSpeed) || gpuClockSpeed <= 0 || gpuClockSpeed > 999.999) {
-      newErrors.gpuClockSpeed = 'GPU Clock Speed must be a number between 0 and 999.999';
+    if (isNaN(gpuClockSpeed) || gpuClockSpeed <= 0 || gpuClockSpeed > 9.99) {
+      newErrors.gpuClockSpeed = 'GPU Clock Speed must be a number between 0 and 9.99';
       isValid = false;
     }
 
