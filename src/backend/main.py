@@ -1,3 +1,4 @@
+from enum import Enum
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -110,6 +111,7 @@ async def check_user(user_email: UserEmail):
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+
 @app.get("/getCountByBrand")
 async def get_aggregation():
     query = """
@@ -125,6 +127,7 @@ async def get_aggregation():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while checking user: {str(e)}"
         )
+
 
 @app.get("/getAvgPrice")
 async def get_aggregation_having():
@@ -142,6 +145,7 @@ async def get_aggregation_having():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while checking user: {str(e)}"
         )
+
 
 @app.get("/getBestBrands")
 async def get_aggregation_nested():
@@ -163,10 +167,15 @@ async def get_aggregation_nested():
             detail=f"An error occurred while checking user: {str(e)}"
         )
 
+
 @app.delete("/deleteUser")
 async def delete_user(user_email: UserEmail):
     email = user_email.email
-    delete_query = "DELETE FROM User WHERE Email = :email"
+    delete_query = \
+        """
+            DELETE FROM 
+            User WHERE Email = :email
+        """
 
     try:
         await db.execute(query=delete_query, values={"email": email})
@@ -176,7 +185,8 @@ async def delete_user(user_email: UserEmail):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while deleting the user: {str(e)}"
         )
-    
+
+
 @app.get("/filterComputers/{cpuBrands}/{minCpuCoreCount}/{maxCpuCoreCount}/{gpuBrands}/{minGpuMemory}/{maxGpuMemory}")
 async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount: int, gpuBrands: str, minGpuMemory: int, maxGpuMemory: int):
     cpuBrands = cpuBrands.split("1")
@@ -185,7 +195,6 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
     gpuBrands = gpuBrands.split("1")
     gpuBrands_query = ["'" + brand + "'" for brand in gpuBrands]
     gpuBrands = ", ".join(gpuBrands_query)
-
 
     filter_query = """
     SELECT C.Id, C.Brand, C.Price, C.AssembledIn
@@ -200,9 +209,8 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
         AND Gpu.Memory BETWEEN {} AND {} ; 
     """.format(cpuBrands, minCpuCoreCount, maxCpuCoreCount, gpuBrands, minGpuMemory, maxGpuMemory)
 
-
     try:
-        results = await db.fetch_all(query=filter_query )
+        results = await db.fetch_all(query=filter_query)
         formatted_results = []
         if results:
             for row in results:
@@ -239,7 +247,7 @@ async def get_cpu_by_computer(id: int):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occured when geting CPU information: {str(e)}"
         )
-
+        
 @app.get("/getAllTables") 
 async def get_all_tables():
     query = """
@@ -272,6 +280,10 @@ async def get_tuples_by_attributes(tableName: str, attributes: Optional[str] = N
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred when getting tuples by attributes: {str(e)}"
         )
+class ReviewType(str, Enum):
+    performance = "Performance"
+    satisfaction = "Satisfaction"
+    design = "Design"
 
 class Computer(BaseModel):
     brand: str
@@ -291,9 +303,17 @@ class Computer(BaseModel):
 @app.post("/addComputer")
 async def addComputer(computerData: Computer):
     print(f"Computer addition request received...{computerData.dict()}")
-    # Check for duplicate cpu brand
-    cpu_brand_duplicate_query = "SELECT * FROM CpuBrand WHERE Model = :model"
+    # Check for duplicate assemble brand
+    assemble_duplicate_query = "SELECT * FROM BrandAssembles WHERE Brand = :brand"
     try:
+      brand_assemble = await db.fetch_one(query=assemble_duplicate_query, values={"brand": computerData.brand})
+      if not brand_assemble:
+          brand_assemble_query = "INSERT INTO BrandAssembles (Brand, AssembledIn) VALUES (:brand, :assembled_in)"
+          await db.execute(query=brand_assemble_query, values={"brand":computerData.brand, "assembled_in":computerData.assembledIn})
+
+      # Check for duplicate cpu brand
+      cpu_brand_duplicate_query = "SELECT * FROM CpuBrand WHERE Model = :model"
+    
       cpu_brand = await db.fetch_one(query=cpu_brand_duplicate_query, values={"model": computerData.cpuModel})
       if not cpu_brand:
           cpu_brand_query = "INSERT INTO CpuBrand (Model, Brand) VALUES (:model, :brand)"
@@ -311,8 +331,9 @@ async def addComputer(computerData: Computer):
       if not cpu_id:
           cpu_query = "INSERT INTO Cpu (Model, ClockSpeed, CoreCount, Generation) VALUES (:model, :clock_speed, :core_count, :generation)"
           await db.execute(query=cpu_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
-          cpu_id = await db.execute("SELECT LAST_INSERT_ID();")
+          cpu_id = await db.fetch_one("SELECT LAST_INSERT_ID();")
       #cpu_id = await db.fetch_one(query=cpu_duplicate_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
+      cpu_id = cpu_id[0]
 
       # Check for duplicate gpu
       gpu_duplicate_query = """
@@ -323,12 +344,13 @@ async def addComputer(computerData: Computer):
       ClockSpeed = :clock_speed 
       """
       gpu_id = await db.fetch_one(query=gpu_duplicate_query, values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
+      
       if not gpu_id:
           gpu_query = "INSERT INTO Gpu (Brand, Model, Memory, ClockSpeed) VALUES (:brand, :model, :memory, :clock_speed)"
           await db.execute(query=gpu_query,  values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
-          gpu_id = await db.execute("SELECT LAST_INSERT_ID();")
+          gpu_id = await db.fetch_one("SELECT LAST_INSERT_ID();")
       #gpu_id = await db.fetch_one(query=gpu_duplicate_query, values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
-      
+      gpu_id = gpu_id[0]
       # Check for duplicate computer
       computer_duplicate_query = """
       SELECT Id FROM Computer 
@@ -343,6 +365,7 @@ async def addComputer(computerData: Computer):
       computer_id = await  db.fetch_one(query=computer_duplicate_query, 
                                         values={"brand":computerData.brand, "price": computerData.price, 
                                                 "assembled_in": computerData.assembledIn, "cpu_id": cpu_id, "gpu_id": gpu_id})
+      
       if not computer_id:
           computer_query = "INSERT INTO Computer (Brand, Price, AssembledIn, CpuId, GpuId, StorageId, MonitorId) VALUES (:brand, :price, :assembled_in, :cpu_id, :gpu_id, 1, 1)"
           await db.execute(query = computer_query, values={"brand":computerData.brand, "price": computerData.price, 
@@ -353,12 +376,106 @@ async def addComputer(computerData: Computer):
             detail=f"An error occurred while adding computer: {str(e)}"
         )
 
-
 class Review(BaseModel):
     review_type: str
     description: str
     rating: int
 
+
+@app.post("/fetchUserReviews")
+async def fetch_user_reviews(user_email: UserEmail):
+    user_query = "SELECT Id FROM User WHERE Email = :email"
+    user = await db.fetch_one(user_query, values={"email": user_email.email})
+
+    if not user:
+        return {"detail": "User not found."}
+
+    user_id = user["Id"]
+
+    reviews = {"Performance": [], "Satisfaction": [], "Design": []}
+
+    # Fetch performance reviews
+    q = \
+        """
+        SELECT Id, Description, Rating, Date 
+        FROM PerformanceReview 
+        WHERE UserId = :user_id
+        """
+    performance_reviews = await db.fetch_all(q, values={"user_id": user_id})
+    for review in performance_reviews:
+        reviews["Performance"].append({
+            "id": review["Id"],
+            "reviewType": "Performance",  
+            "description": review["Description"],
+            "rating": review["Rating"],
+            "date": review["Date"].isoformat(),
+        })
+
+    # Fetch satisfaction reviews
+    q = \
+        """
+        SELECT Id, Description, Rating, Date 
+        FROM SatisfactionReview 
+        WHERE UserId = :user_id
+        """
+    satisfaction_reviews = await db.fetch_all(q, values={"user_id": user_id}
+    )
+    for review in satisfaction_reviews:
+        reviews["Satisfaction"].append({
+            "id": review["Id"],
+            "reviewType": "Satisfaction",
+            "description": review["Description"],
+            "rating": review["Rating"],
+            "date": review["Date"].isoformat(),
+        })
+
+    # Fetch design reviews
+    q = \
+        """
+        SELECT Id, Description, Rating, Date 
+        FROM DesignReview
+        WHERE UserId = :user_id
+        """
+    design_reviews = await db.fetch_all(q, values={"user_id": user_id}
+    )
+    for review in design_reviews:
+        reviews["Design"].append({
+            "id": review["Id"],
+            "reviewType": "Design",
+            "description": review["Description"],
+            "rating": review["Rating"],
+            "date": review["Date"].isoformat(),
+        })
+
+    return reviews
+
+class ReviewUpdate(BaseModel):
+    description: str
+    rating: int
+
+@app.put("/reviews/{review_type}/{review_id}")
+async def update_review(review_type: ReviewType, review_id: int, review_update: ReviewUpdate):
+    print(f"Received update for {review_type} review with ID {review_id}: {review_update.json()}")
+    if review_type == ReviewType.performance:
+        table = "PerformanceReview"
+    elif review_type == ReviewType.satisfaction:
+        table = "SatisfactionReview"
+    elif review_type == ReviewType.design:
+        table = "DesignReview"
+    else:
+        return {"detail": "Invalid review type."}
+    
+    update_query = f"""
+        UPDATE {table} 
+        SET Description = :description, Rating = :rating 
+        WHERE Id = :review_id
+    """
+    await db.execute(update_query, values={
+        "description": review_update.description,
+        "rating": review_update.rating,
+        "review_id": review_id,
+    })
+    return {"detail": "Review updated successfully."}
 
 @app.post("/userWroteAllReviews")
 async def get_user_wrote_all_reviews(user_email: UserEmail):
