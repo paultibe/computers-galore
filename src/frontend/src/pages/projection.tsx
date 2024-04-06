@@ -24,8 +24,9 @@ const Projection = () => {
       try {
         const response = await fetch(`${BE_BASE_URL}/getAllTables`);
         const tables = await response.json();
-        console.log("my tables", tables);
-        setTables(tables);
+        const tableNames = tables.map((table) => table.Tables_in_304_db);
+        console.log("my tables", tableNames);
+        setTables(tableNames);
       } catch (error) {
         console.error("Failed to fetch tables:", error);
       }
@@ -38,11 +39,22 @@ const Projection = () => {
     const tableName = event.target.value;
     setSelectedTable(tableName);
     // Fetch attributes for the selected table
+    // console.log(selectedTable);
     try {
-      const response = await fetch(`/getTuplesByAttributes/${tableName}`);
+      const response = await fetch(
+        `${BE_BASE_URL}/getTuplesByAttributes/${tableName}`
+      );
       const data = await response.json();
-      setAttributes(data);
-      setSelectedAttributes([]); // Reset selected attributes when table changes
+
+      if (Array.isArray(data) && data.length > 0) {
+        // get an array of attribute names
+        const attributeNames = Object.keys(data[0]);
+        setAttributes(attributeNames);
+      } else {
+        console.error("Received data is not an array or is empty");
+        setAttributes([]);
+      }
+      setSelectedAttributes([]);
     } catch (error) {
       console.error(
         `Failed to fetch attributes for table ${tableName}:`,
@@ -62,11 +74,13 @@ const Projection = () => {
     }
 
     try {
+      console.log(selectedTable);
+      console.log(selectedAttributes);
       const response = await fetch(
-        `/getTuplesByAttributes/${selectedTable}?attributes=${selectedAttributes.join(
+        `${BE_BASE_URL}/getTuplesByAttributes/${selectedTable}?attributes=${selectedAttributes.join(
           ","
         )}`
-      );
+      ); //
       const data = await response.json();
       setData(data);
     } catch (error) {
