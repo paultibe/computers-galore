@@ -261,7 +261,7 @@ async def addComputer(computerData: Computer):
       if not cpu_id:
           cpu_query = "INSERT INTO Cpu (Model, ClockSpeed, CoreCount, Generation) VALUES (:model, :clock_speed, :core_count, :generation)"
           await db.execute(query=cpu_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
-          cpu_id = await db.execute("SELECT LAST_INSERT_ID();")
+          cpu_id = await db.fetch_one("SELECT LAST_INSERT_ID();")
       #cpu_id = await db.fetch_one(query=cpu_duplicate_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
 
       # Check for duplicate gpu
@@ -276,7 +276,7 @@ async def addComputer(computerData: Computer):
       if not gpu_id:
           gpu_query = "INSERT INTO Gpu (Brand, Model, Memory, ClockSpeed) VALUES (:brand, :model, :memory, :clock_speed)"
           await db.execute(query=gpu_query,  values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
-          gpu_id = await db.execute("SELECT LAST_INSERT_ID();")
+          gpu_id = await db.fetch_one("SELECT LAST_INSERT_ID();")
       #gpu_id = await db.fetch_one(query=gpu_duplicate_query, values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
       
       # Check for duplicate computer
