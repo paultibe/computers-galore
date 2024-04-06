@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import {
   FormControl,
   InputLabel,
   Select,
@@ -19,7 +28,6 @@ const Projection = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // Fetch all table names
     const fetchTables = async () => {
       try {
         const response = await fetch(`${BE_BASE_URL}/getAllTables`);
@@ -88,7 +96,6 @@ const Projection = () => {
     }
   };
 
-  // Render part of the component
   return (
     <div>
       <FormControl fullWidth>
@@ -128,7 +135,33 @@ const Projection = () => {
         Submit
       </Button>
 
-      {/* Display data in a simple table or use a more sophisticated component like DataGrid */}
+      <div>
+        {data && data.length > 0 && (
+          <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  {/* dynamically create a table header based on selectedAttributes */}
+                  {selectedAttributes.map((header) => (
+                    <TableCell key={header}>{header}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((row, index) => (
+                  <TableRow key={index}>
+                    {selectedAttributes.map((attr) => (
+                      <TableCell key={`${index}-${attr}`}>
+                        {row[attr]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </div>
     </div>
   );
 };
