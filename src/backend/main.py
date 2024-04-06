@@ -271,9 +271,17 @@ class Computer(BaseModel):
 @app.post("/addComputer")
 async def addComputer(computerData: Computer):
     print(f"Computer addition request received...{computerData.dict()}")
-    # Check for duplicate cpu brand
-    cpu_brand_duplicate_query = "SELECT * FROM CpuBrand WHERE Model = :model"
+    # Check for duplicate assemble brand
+    assemble_duplicate_query = "SELECT * FROM BrandAssembles WHERE Brand = :brand"
     try:
+      brand_assemble = await db.fetch_one(query=assemble_duplicate_query, values={"brand": computerData.brand})
+      if not brand_assemble:
+          brand_assemble_query = "INSERT INTO BrandAssembles (Brand, AssembledIn) VALUES (:brand, :assembled_in)"
+          await db.execute(query=brand_assemble_query, values={"brand":computerData.brand, "assembled_in":computerData.assembledIn})
+
+      # Check for duplicate cpu brand
+      cpu_brand_duplicate_query = "SELECT * FROM CpuBrand WHERE Model = :model"
+    
       cpu_brand = await db.fetch_one(query=cpu_brand_duplicate_query, values={"model": computerData.cpuModel})
       if not cpu_brand:
           cpu_brand_query = "INSERT INTO CpuBrand (Model, Brand) VALUES (:model, :brand)"
