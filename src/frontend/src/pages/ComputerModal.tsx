@@ -141,9 +141,8 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
     }
 
     const cpuCoreCount = parseInt(computerData.cpuCoreCount.trim());
-    if (isNaN(cpuCoreCount) || cpuCoreCount < 0 || cpuCoreCount > 16) {
-      newErrors.cpuCoreCount =
-        "CPU core count must be a number between 0 and 16";
+    if (isNaN(cpuCoreCount) || cpuCoreCount < 0 || cpuCoreCount > 16 ) {
+      newErrors.cpuCoreCount = 'CPU core count must be a number between 0 and 16';
       isValid = false;
     }
 

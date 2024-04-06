@@ -27,7 +27,7 @@ CREATE TABLE User (
 CREATE TABLE PremiumUser (
     UserId BIGINT UNSIGNED,
     ExpiryDate DATETIME,
-    FOREIGN KEY (UserId) REFERENCES User(Id)
+    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE
 );
 
 CREATE TABLE CpuBrand (
@@ -98,7 +98,7 @@ CREATE TABLE PerformanceReview (
     UserId BIGINT UNSIGNED,
     ComputerId BIGINT UNSIGNED,
     Date DATETIME,
-    FOREIGN KEY (UserId) REFERENCES User(Id),
+    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
     FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
 );
 
@@ -109,7 +109,7 @@ CREATE TABLE DesignReview (
     UserId BIGINT UNSIGNED,
     ComputerId BIGINT UNSIGNED,
     Date DATETIME,
-    FOREIGN KEY (UserId) REFERENCES User(Id),
+    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
     FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
 );
 
@@ -120,7 +120,7 @@ CREATE TABLE SatisfactionReview (
     UserId BIGINT UNSIGNED,
     ComputerId BIGINT UNSIGNED,
     Date DATETIME,
-    FOREIGN KEY (UserId) REFERENCES User(Id),
+    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
     FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
 );
 
@@ -144,7 +144,7 @@ CREATE TABLE Sells (
 CREATE TABLE Searches (
     UserId BIGINT UNSIGNED,
     ComputerId BIGINT UNSIGNED,
-    FOREIGN KEY (UserId) REFERENCES User(Id),
+    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
     FOREIGN KEY (ComputerId) REFERENCES Computer(Id)
 );
 
@@ -152,7 +152,7 @@ CREATE TABLE Compares (
     UserId BIGINT UNSIGNED,
     ComputerIdOne BIGINT UNSIGNED,
     ComputerIdTwo BIGINT UNSIGNED,
-    FOREIGN KEY (UserId) REFERENCES User(Id),
+    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
     FOREIGN KEY (ComputerIdOne) REFERENCES Computer(Id),
     FOREIGN KEY (ComputerIdTwo) REFERENCES Computer(Id)
 );
