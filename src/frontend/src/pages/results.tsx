@@ -244,7 +244,7 @@ const ResultsPage = (props: any) => {
             open={open}
           >
             <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-              Modal title
+              CPU Info
             </DialogTitle>
             <IconButton
               aria-label="close"

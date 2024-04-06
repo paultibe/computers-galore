@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BE_BASE_URL } from '../constants';
+import React, { useState } from "react";
+import { BE_BASE_URL } from "../constants";
 
 interface ComputerModalProps {
   isOpen: boolean;
@@ -8,33 +8,33 @@ interface ComputerModalProps {
 
 const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
   const [computerData, setComputerData] = useState({
-    brand: '',
-    price: '',
-    assembledIn: '',
-    cpuModel: '',
-    cpuBrand: '',
-    cpuClockSpeed: '',
-    cpuGeneration: '',
-    cpuCoreCount: '',
-    gpuBrand: '',
-    gpuModel: '',
-    gpuMemory: '',
-    gpuClockSpeed: ''
+    brand: "",
+    price: "",
+    assembledIn: "",
+    cpuModel: "",
+    cpuBrand: "",
+    cpuClockSpeed: "",
+    cpuGeneration: "",
+    cpuCoreCount: "",
+    gpuBrand: "",
+    gpuModel: "",
+    gpuMemory: "",
+    gpuClockSpeed: "",
   });
 
   const [errors, setErrors] = useState({
-    brand: '',
-    price: '',
-    assembledIn: '',
-    cpuModel: '',
-    cpuBrand: '',
-    cpuClockSpeed: '',
-    cpuGeneration: '',
-    cpuCoreCount: '',
-    gpuBrand: '',
-    gpuModel: '',
-    gpuMemory: '',
-    gpuClockSpeed: ''
+    brand: "",
+    price: "",
+    assembledIn: "",
+    cpuModel: "",
+    cpuBrand: "",
+    cpuClockSpeed: "",
+    cpuGeneration: "",
+    cpuCoreCount: "",
+    gpuBrand: "",
+    gpuModel: "",
+    gpuMemory: "",
+    gpuClockSpeed: "",
   });
 
   const submitComputer = async () => {
@@ -45,21 +45,21 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
 
   const shootComputer = async () => {
     const url = `${BE_BASE_URL}/addComputer`;
-    console.log(computerData.brand)
+    console.log(computerData.brand);
     const payload = JSON.stringify({
       brand: computerData.brand,
       price: parseFloat(computerData.price),
       assembledIn: computerData.assembledIn,
       cpuModel: computerData.cpuModel,
       cpuBrand: computerData.cpuBrand,
-      cpuClockSpeed: parseFloat(computerData.cpuClockSpeed), 
-      cpuGeneration: parseInt(computerData.cpuGeneration), 
-      cpuCoreCount: parseInt(computerData.cpuCoreCount), 
+      cpuClockSpeed: parseFloat(computerData.cpuClockSpeed),
+      cpuGeneration: parseInt(computerData.cpuGeneration),
+      cpuCoreCount: parseInt(computerData.cpuCoreCount),
       gpuBrand: computerData.gpuBrand,
       gpuModel: computerData.gpuModel,
       gpuMemory: parseInt(computerData.gpuMemory),
-      gpuClockSpeed: parseFloat(computerData.gpuClockSpeed), 
-    })
+      gpuClockSpeed: parseFloat(computerData.gpuClockSpeed),
+    });
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -85,7 +85,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setComputerData({ ...computerData, [name]: value });
-    setErrors({ ...errors, [name]: '' }); 
+    setErrors({ ...errors, [name]: "" });
   };
 
   const handleAddComputer = () => {
@@ -101,35 +101,42 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
 
     // Validation for computer details
     if (!computerData.brand.trim()) {
-      newErrors.brand = 'Brand is required';
+      newErrors.brand = "Brand is required";
       isValid = false;
     }
-    if (!computerData.price.trim() || isNaN(parseFloat(computerData.price.trim()))) {
-      newErrors.price = 'Price must be a number';
+    if (
+      !computerData.price.trim() ||
+      isNaN(parseFloat(computerData.price.trim()))
+    ) {
+      newErrors.price = "Price must be a number";
       isValid = false;
     }
     if (!computerData.assembledIn.trim()) {
-      newErrors.assembledIn = 'Assembled In is required';
+      newErrors.assembledIn = "Assembled In is required";
       isValid = false;
     }
 
     // Validation for CPU details
     if (!computerData.cpuModel.trim()) {
-      newErrors.cpuModel = 'CPU Model is required';
+      newErrors.cpuModel = "CPU Model is required";
       isValid = false;
     }
-    if (!computerData.cpuBrand.trim() || !['Intel', 'AMD'].includes(computerData.cpuBrand.trim())) {
-      newErrors.cpuBrand = 'CPU brand must be Intel or AMD';
+    if (
+      !computerData.cpuBrand.trim() ||
+      !["Intel", "AMD"].includes(computerData.cpuBrand.trim())
+    ) {
+      newErrors.cpuBrand = "CPU brand must be Intel or AMD";
       isValid = false;
     }
     const cpuClockSpeed = parseFloat(computerData.cpuClockSpeed.trim());
     if (isNaN(cpuClockSpeed) || cpuClockSpeed <= 0 || cpuClockSpeed > 999.999) {
-      newErrors.cpuClockSpeed = 'CPU Clock Speed must be a number between 0 and 999.999';
+      newErrors.cpuClockSpeed =
+        "CPU Clock Speed must be a number between 0 and 999.999";
       isValid = false;
     }
     const cpuGeneration = parseInt(computerData.cpuGeneration.trim());
     if (isNaN(cpuGeneration) || cpuGeneration < 0) {
-      newErrors.cpuGeneration = 'CPU Generation must be a non-negative number';
+      newErrors.cpuGeneration = "CPU Generation must be a non-negative number";
       isValid = false;
     }
 
@@ -140,13 +147,16 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
     }
 
     // Validation for GPU details
-    if (!computerData.gpuBrand.trim() || !['NVIDIA', 'AMD'].includes(computerData.gpuBrand.trim())) {
-      newErrors.gpuBrand = 'GPU brand must be NVIDIA or AMD';
+    if (
+      !computerData.gpuBrand.trim() ||
+      !["NVIDIA", "AMD"].includes(computerData.gpuBrand.trim())
+    ) {
+      newErrors.gpuBrand = "GPU brand must be NVIDIA or AMD";
       isValid = false;
     }
     const gpuMemory = parseInt(computerData.gpuMemory.trim());
     if (isNaN(gpuMemory) || gpuMemory < 0 || gpuMemory > 16) {
-      newErrors.gpuMemory = 'GPU memory must be a number between 0 and 16';
+      newErrors.gpuMemory = "GPU memory must be a number between 0 and 16";
       isValid = false;
     }
     const gpuClockSpeed = parseFloat(computerData.gpuClockSpeed.trim());
@@ -173,7 +183,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.brand}
             onChange={handleInputChange}
             placeholder="Brand"
-            className={`input ${errors.brand && 'input-error'}`}
+            className={`input ${errors.brand && "input-error"}`}
           />
           {errors.brand && <p className="text-red-500">{errors.brand}</p>}
           <input
@@ -182,7 +192,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.price}
             onChange={handleInputChange}
             placeholder="Price"
-            className={`input ${errors.price && 'input-error'}`}
+            className={`input ${errors.price && "input-error"}`}
           />
           {errors.price && <p className="text-red-500">{errors.price}</p>}
           <input
@@ -191,9 +201,11 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.assembledIn}
             onChange={handleInputChange}
             placeholder="Assembled In"
-            className={`input ${errors.assembledIn && 'input-error'}`}
+            className={`input ${errors.assembledIn && "input-error"}`}
           />
-          {errors.assembledIn && <p className="text-red-500">{errors.assembledIn}</p>}
+          {errors.assembledIn && (
+            <p className="text-red-500">{errors.assembledIn}</p>
+          )}
         </div>
         <div className="mb-4">
           <h5>CPU</h5>
@@ -203,7 +215,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.cpuModel}
             onChange={handleInputChange}
             placeholder="CPU Model"
-            className={`input ${errors.cpuModel && 'input-error'}`}
+            className={`input ${errors.cpuModel && "input-error"}`}
           />
           {errors.cpuModel && <p className="text-red-500">{errors.cpuModel}</p>}
           <input
@@ -212,7 +224,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.cpuBrand}
             onChange={handleInputChange}
             placeholder="CPU Brand"
-            className={`input ${errors.cpuBrand && 'input-error'}`}
+            className={`input ${errors.cpuBrand && "input-error"}`}
           />
           {errors.cpuBrand && <p className="text-red-500">{errors.cpuBrand}</p>}
           <input
@@ -221,27 +233,33 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.cpuClockSpeed}
             onChange={handleInputChange}
             placeholder="CPU Clock Speed"
-            className={`input ${errors.cpuClockSpeed && 'input-error'}`}
+            className={`input ${errors.cpuClockSpeed && "input-error"}`}
           />
-          {errors.cpuClockSpeed && <p className="text-red-500">{errors.cpuClockSpeed}</p>}
+          {errors.cpuClockSpeed && (
+            <p className="text-red-500">{errors.cpuClockSpeed}</p>
+          )}
           <input
             type="text"
             name="cpuGeneration"
             value={computerData.cpuGeneration}
             onChange={handleInputChange}
             placeholder="CPU Generation"
-            className={`input ${errors.cpuGeneration && 'input-error'}`}
+            className={`input ${errors.cpuGeneration && "input-error"}`}
           />
-          {errors.cpuGeneration && <p className="text-red-500">{errors.cpuGeneration}</p>}
+          {errors.cpuGeneration && (
+            <p className="text-red-500">{errors.cpuGeneration}</p>
+          )}
           <input
             type="text"
             name="cpuCoreCount"
             value={computerData.cpuCoreCount}
             onChange={handleInputChange}
             placeholder="CPU Core Count"
-            className={`input ${errors.cpuCoreCount && 'input-error'}`}
+            className={`input ${errors.cpuCoreCount && "input-error"}`}
           />
-          {errors.cpuCoreCount && <p className="text-red-500">{errors.cpuCoreCount}</p>}
+          {errors.cpuCoreCount && (
+            <p className="text-red-500">{errors.cpuCoreCount}</p>
+          )}
         </div>
         <div className="mb-4">
           <h5>GPU</h5>
@@ -251,7 +269,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.gpuBrand}
             onChange={handleInputChange}
             placeholder="GPU Brand"
-            className={`input ${errors.gpuBrand && 'input-error'}`}
+            className={`input ${errors.gpuBrand && "input-error"}`}
           />
           {errors.gpuBrand && <p className="text-red-500">{errors.gpuBrand}</p>}
           <input
@@ -260,7 +278,7 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.gpuModel}
             onChange={handleInputChange}
             placeholder="GPU Model"
-            className={`input ${errors.gpuModel && 'input-error'}`}
+            className={`input ${errors.gpuModel && "input-error"}`}
           />
           {errors.gpuModel && <p className="text-red-500">{errors.gpuModel}</p>}
           <input
@@ -269,21 +287,29 @@ const ComputerModal: React.FC<ComputerModalProps> = ({ isOpen, onClose }) => {
             value={computerData.gpuMemory}
             onChange={handleInputChange}
             placeholder="GPU Memory"
-            className={`input ${errors.gpuMemory && 'input-error'}`}
+            className={`input ${errors.gpuMemory && "input-error"}`}
           />
-          {errors.gpuMemory && <p className="text-red-500">{errors.gpuMemory}</p>}
+          {errors.gpuMemory && (
+            <p className="text-red-500">{errors.gpuMemory}</p>
+          )}
           <input
             type="text"
             name="gpuClockSpeed"
             value={computerData.gpuClockSpeed}
             onChange={handleInputChange}
             placeholder="GPU Clock Speed"
-            className={`input ${errors.gpuClockSpeed && 'input-error'}`}
+            className={`input ${errors.gpuClockSpeed && "input-error"}`}
           />
-          {errors.gpuClockSpeed && <p className="text-red-500">{errors.gpuClockSpeed}</p>}
+          {errors.gpuClockSpeed && (
+            <p className="text-red-500">{errors.gpuClockSpeed}</p>
+          )}
         </div>
-        <button onClick={handleAddComputer} className="btn mr-2">Add Computer</button>
-        <button onClick={onClose} className="btn btn-secondary">Close</button>
+        <button onClick={handleAddComputer} className="btn mr-2">
+          Add Computer
+        </button>
+        <button onClick={onClose} className="btn btn-secondary">
+          Close
+        </button>
       </div>
     </div>
   );
