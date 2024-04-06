@@ -133,7 +133,6 @@ async def init_tables():
         Id SERIAL PRIMARY KEY,
         Brand VARCHAR(127),
         Price DECIMAL(5, 2) CHECK (Price BETWEEN 0.00 AND 999.99),
-        AssembledIn VARCHAR(127),
         CpuId BIGINT UNSIGNED,
         GpuId BIGINT UNSIGNED,
         StorageId BIGINT UNSIGNED,
