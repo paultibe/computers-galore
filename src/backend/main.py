@@ -314,6 +314,7 @@ class ReviewUpdate(BaseModel):
 
 @app.put("/reviews/{review_type}/{review_id}")
 async def update_review(review_type: ReviewType, review_id: int, review_update: ReviewUpdate):
+    print(f"Received update for {review_type} review with ID {review_id}: {review_update.json()}")
     if review_type == ReviewType.performance:
         table = "PerformanceReview"
     elif review_type == ReviewType.satisfaction:

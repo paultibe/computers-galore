@@ -26,35 +26,38 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({ isOpen, review, onSav
       alert("No review to edit!");
       return;
     }
-  
+
+    const reviewTypePath = review.reviewType;
+
     const updatedReview = {
-      description: description,
-      rating: rating,
+        description: description,
+        rating: rating,
     };
-  
+
     try {
-      const response = await fetch(`${BE_BASE_URL}/reviews/${review.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedReview),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to update review: ${response.status}`);
-      }
-  
-      const savedReview = await response.json();
-  
-      onSave(savedReview);
-  
-      onClose();
+        const response = await fetch(`${BE_BASE_URL}/reviews/${reviewTypePath}/${review.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedReview),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to update review: ${response.status}`);
+        }
+
+        const savedReview = await response.json();
+
+        onSave({ ...review, ...savedReview });
+
+        onClose();
     } catch (error) {
-      console.error("Error updating review:", error);
-      alert("Failed to update the review. Please try again.");
+        console.error("Error updating review:", error);
+        alert("Failed to update the review. Please try again.");
     }
 };
+
 
 
   if (!isOpen) return null;  // If modal is not open
