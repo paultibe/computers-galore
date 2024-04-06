@@ -50,7 +50,6 @@ async def shutdown():
 async def read_root():
     return {"junsu and john": "are cracked programmers"}
 
-
 class UserSignup(BaseModel):
     name: str = Field(..., min_length=1, max_length=127)
     email: str = Field(..., min_length=1, max_length=127)
@@ -231,12 +230,108 @@ async def filter_computers(cpuBrands: str, minCpuCoreCount: int, maxCpuCoreCount
             detail=f"An error occurred while filtering computers: {str(e)}"
         )
 
+@app.get("/getCpuByComputer/{id}") 
+async def get_cpu_by_computer(id: int):
+    query = """
+    SELECT c2.*
+    FROM Computer c, Cpu c2
+    WHERE c.CpuId = c2.Id AND c.Id = :id
+    """
+    try:
+        results = await db.fetch_all(query, values={"id": id})
+        if results is None:
+            raise HTTPException(status_code=404, detail="Computer not found")
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occured when geting CPU information: {str(e)}"
+        )
 
 class ReviewType(str, Enum):
     performance = "Performance"
     satisfaction = "Satisfaction"
     design = "Design"
 
+class Computer(BaseModel):
+    brand: str
+    price: float
+    assembledIn: str
+    cpuModel: str
+    cpuBrand: str
+    cpuClockSpeed: float
+    cpuGeneration: int
+    cpuCoreCount: int
+    gpuBrand: str
+    gpuModel: str
+    gpuMemory: int
+    gpuClockSpeed: float
+
+# Note that Storage and Monitors are fixed
+@app.post("/addComputer")
+async def addComputer(computerData: Computer):
+    print(f"Computer addition request received...{computerData.dict()}")
+    # Check for duplicate cpu brand
+    cpu_brand_duplicate_query = "SELECT * FROM CpuBrand WHERE Model = :model"
+    try:
+      cpu_brand = await db.fetch_one(query=cpu_brand_duplicate_query, values={"model": computerData.cpuModel})
+      if not cpu_brand:
+          cpu_brand_query = "INSERT INTO CpuBrand (Model, Brand) VALUES (:model, :brand)"
+          await db.execute(query=cpu_brand_query, values={"model": computerData.cpuModel, "brand": computerData.cpuBrand})
+      
+      # Check for duplicate cpu
+      cpu_duplicate_query = """
+      SELECT Id FROM Cpu 
+      WHERE Model = :model AND 
+      ClockSpeed = :clock_speed AND
+      CoreCount = :core_count AND
+      Generation = :generation
+      """
+      cpu_id = await db.fetch_one(query=cpu_duplicate_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
+      if not cpu_id:
+          cpu_query = "INSERT INTO Cpu (Model, ClockSpeed, CoreCount, Generation) VALUES (:model, :clock_speed, :core_count, :generation)"
+          await db.execute(query=cpu_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
+          cpu_id = await db.execute("SELECT LAST_INSERT_ID();")
+      #cpu_id = await db.fetch_one(query=cpu_duplicate_query, values={"model":computerData.cpuModel, "clock_speed": computerData.cpuClockSpeed, "core_count": computerData.cpuCoreCount, "generation": computerData.cpuGeneration})
+
+      # Check for duplicate gpu
+      gpu_duplicate_query = """
+      SELECT Id FROM Gpu 
+      WHERE Brand = :brand AND 
+      Model = :model AND
+      Memory = :memory AND
+      ClockSpeed = :clock_speed 
+      """
+      gpu_id = await db.fetch_one(query=gpu_duplicate_query, values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
+      if not gpu_id:
+          gpu_query = "INSERT INTO Gpu (Brand, Model, Memory, ClockSpeed) VALUES (:brand, :model, :memory, :clock_speed)"
+          await db.execute(query=gpu_query,  values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
+          gpu_id = await db.execute("SELECT LAST_INSERT_ID();")
+      #gpu_id = await db.fetch_one(query=gpu_duplicate_query, values={"model":computerData.gpuModel, "clock_speed": computerData.gpuClockSpeed, "brand": computerData.gpuBrand, "memory": computerData.gpuMemory})
+      
+      # Check for duplicate computer
+      computer_duplicate_query = """
+      SELECT Id FROM Computer 
+      WHERE Brand = :brand AND 
+      Price = :price AND
+      AssembledIn = :assembled_in AND
+      CpuId = :cpu_id AND 
+      GpuId = :gpu_id AND 
+      StorageId = 1 AND
+      MonitorId = 1
+      """
+      computer_id = await  db.fetch_one(query=computer_duplicate_query, 
+                                        values={"brand":computerData.brand, "price": computerData.price, 
+                                                "assembled_in": computerData.assembledIn, "cpu_id": cpu_id, "gpu_id": gpu_id})
+      if not computer_id:
+          computer_query = "INSERT INTO Computer (Brand, Price, AssembledIn, CpuId, GpuId, StorageId, MonitorId) VALUES (:brand, :price, :assembled_in, :cpu_id, :gpu_id, 1, 1)"
+          await db.execute(query = computer_query, values={"brand":computerData.brand, "price": computerData.price, 
+                                                "assembled_in": computerData.assembledIn, "cpu_id": cpu_id, "gpu_id": gpu_id})
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while adding computer: {str(e)}"
+        )
 
 class Review(BaseModel):
     review_type: str
