@@ -78,6 +78,7 @@ CREATE TABLE Computer (
     Id SERIAL PRIMARY KEY,
     Brand VARCHAR(127),
     Price DECIMAL(7, 2) CHECK (Price BETWEEN 0.00 AND 99999.99),
+    AssembledIn VARCHAR(127),
     CpuId BIGINT UNSIGNED,
     GpuId BIGINT UNSIGNED,
     StorageId BIGINT UNSIGNED,
@@ -226,12 +227,12 @@ INSERT INTO BrandAssembles (Brand, AssembledIn) VALUES
 ('HP', 'Japan'),
 ('Lenovo', 'Taiwan');
 
-INSERT INTO Computer (Brand, Price, CpuId, GpuId, StorageId, MonitorId) VALUES
-('Dell', 3200.00, 1, 2, 2, 3),
-('Razor', 2100.00, 3, 3, 3, 1),
-('Apple', 3499.99, 2, 1, 1, 3),
-('HP', 1500.00, 4, 4, 4, 4),
-('Lenovo', 1800.00, 5, 5, 5, 5);
+INSERT INTO Computer (Brand, Price, AssembledIn, CpuId, GpuId, StorageId, MonitorId) VALUES
+('Dell', 3200.00, 'China', 1, 2, 2, 3),
+('Razor', 2100.00, 'Singapore', 3, 3, 3, 1),
+('Apple', 3499.99, 'USA', 2, 1, 1, 3),
+('HP', 1500.00, 'Japan', 4, 4, 4, 4),
+('Lenovo', 1800.00, 'Taiwan', 5, 5, 5, 5);
 
 INSERT INTO PerformanceReview (Rating, Description, BenchMark, UserId, ComputerId, Date) VALUES
 (5, 'Excellent performance and value.', 10000.00, 1, 1, '2024-03-01 09:00:00'),
