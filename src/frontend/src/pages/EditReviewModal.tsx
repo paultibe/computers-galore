@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BE_BASE_URL } from '../constants';
 import { Review } from '../interfaces/Review'; 
 
 interface EditReviewModalProps {
@@ -20,8 +21,6 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({ isOpen, review, onSav
   }, [review]);
 
   const handleSave = async () => {
-    const BE_BASE_URL = "http://192.9.242.103:8000";
-
     if (!review) {
       alert("No review to edit!");
       return;

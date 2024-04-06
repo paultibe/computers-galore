@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import SearchPage from "./pages/search";
 import ResultsPage from "./pages/results";
+import { BE_BASE_URL } from "./constants";
 import "./App.css";
 
 // Junsu loves modals
@@ -14,8 +15,6 @@ import EditReviewModal from "./pages/EditReviewModal";
 import { Review } from "./interfaces/Review";
 
 function Home() {
-  const BE_BASE_URL = "http://192.9.242.103:8000";
-
   // User sign up states
   // Password is not required for user sign in
   const [signUpModalActive, setSignUpModalActive] = useState(false);
@@ -47,6 +46,8 @@ function Home() {
         alert("Please log in first to view your reviews.");
         return;
     }
+
+    console.log("Fetching reviews for user:", curUserEmail);
     
     try {
         const response = await fetch(`${BE_BASE_URL}/fetchUserReviews`, {
@@ -62,6 +63,9 @@ function Home() {
         const flattenedReviews: Review[] = Object.values(reviewsResponse).flat();
 
         setUserReviews(flattenedReviews);
+
+        console.log("Flattened reviews:", flattenedReviews);
+        console.log("Fetched reviews:", userReviews);
         setViewReviewsModalActive(true);
     } catch (error) {
         console.error("Error fetching reviews:", error);

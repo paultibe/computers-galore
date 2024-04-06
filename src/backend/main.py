@@ -254,7 +254,7 @@ async def fetch_user_reviews(user_email: UserEmail):
 
     user_id = user["Id"]
 
-    reviews = {"performance": [], "satisfaction": [], "design": []}
+    reviews = {"Performance": [], "Satisfaction": [], "Design": []}
 
     # Fetch performance reviews
     q = \
@@ -265,8 +265,9 @@ async def fetch_user_reviews(user_email: UserEmail):
         """
     performance_reviews = await db.fetch_all(q, values={"user_id": user_id})
     for review in performance_reviews:
-        reviews["performance"].append({
+        reviews["Performance"].append({
             "id": review["Id"],
+            "reviewType": "Performance",  
             "description": review["Description"],
             "rating": review["Rating"],
             "date": review["Date"].isoformat(),
@@ -282,8 +283,9 @@ async def fetch_user_reviews(user_email: UserEmail):
     satisfaction_reviews = await db.fetch_all(q, values={"user_id": user_id}
     )
     for review in satisfaction_reviews:
-        reviews["satisfaction"].append({
+        reviews["Satisfaction"].append({
             "id": review["Id"],
+            "reviewType": "Satisfaction",
             "description": review["Description"],
             "rating": review["Rating"],
             "date": review["Date"].isoformat(),
@@ -299,8 +301,9 @@ async def fetch_user_reviews(user_email: UserEmail):
     design_reviews = await db.fetch_all(q, values={"user_id": user_id}
     )
     for review in design_reviews:
-        reviews["design"].append({
+        reviews["Design"].append({
             "id": review["Id"],
+            "reviewType": "Design",
             "description": review["Description"],
             "rating": review["Rating"],
             "date": review["Date"].isoformat(),
