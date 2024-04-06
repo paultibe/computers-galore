@@ -37,48 +37,48 @@ function Home() {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
   const handleOpenViewReviews = async () => {
-    await fetchReviews(); 
+    await fetchReviews();
     setViewReviewsModalActive(true);
   };
 
   const handleEditReview = (review: Review) => {
-    setSelectedReview(review); 
-    setViewReviewsModalActive(false); 
-    setEditReviewsModalActive(true); 
+    setSelectedReview(review);
+    setViewReviewsModalActive(false);
+    setEditReviewsModalActive(true);
   };
 
   const fetchReviews = async () => {
     if (!curUserEmail) {
-        alert("Please log in first to view your reviews.");
-        return;
+      alert("Please log in first to view your reviews.");
+      return;
     }
 
     console.log("Fetching reviews for user:", curUserEmail);
-    
+
     try {
-        const response = await fetch(`${BE_BASE_URL}/fetchUserReviews`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: curUserEmail }),
-        });
+      const response = await fetch(`${BE_BASE_URL}/fetchUserReviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: curUserEmail }),
+      });
 
-        if (!response.ok) throw new Error("Failed to fetch reviews");
+      if (!response.ok) throw new Error("Failed to fetch reviews");
 
-        const reviewsResponse: { [key: string]: Review[] } = await response.json();
+      const reviewsResponse: { [key: string]: Review[] } =
+        await response.json();
 
-        const flattenedReviews: Review[] = Object.values(reviewsResponse).flat();
+      const flattenedReviews: Review[] = Object.values(reviewsResponse).flat();
 
-        setUserReviews(flattenedReviews);
+      setUserReviews(flattenedReviews);
 
-        console.log("Flattened reviews:", flattenedReviews);
-        console.log("Fetched reviews:", userReviews);
-        setViewReviewsModalActive(true);
+      console.log("Flattened reviews:", flattenedReviews);
+      console.log("Fetched reviews:", userReviews);
+      setViewReviewsModalActive(true);
     } catch (error) {
-        console.error("Error fetching reviews:", error);
-        alert("Failed to fetch your reviews.");
+      console.error("Error fetching reviews:", error);
+      alert("Failed to fetch your reviews.");
     }
   };
-
 
   const handleSignUp = () => {
     console.log("Sign up clicked");
@@ -238,12 +238,12 @@ function Home() {
         </Link>
         <Link to="/aggregate">
           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            Aggregate 📊
+            Find Special 📊
           </button>
         </Link>
         <Link to="/projection">
           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            Projection 📊
+            View 📊
           </button>
         </Link>
         <button onClick={() => setSignInModalActive(true)}>Log in 🏃</button>
@@ -285,7 +285,7 @@ function Home() {
           isOpen={editReviewsModalActive}
           review={selectedReview}
           onSave={(updatedReview) => {
-            const updatedUserReviews = userReviews.map(review => {
+            const updatedUserReviews = userReviews.map((review) => {
               if (review.id === updatedReview.id) {
                 return updatedReview;
               }
