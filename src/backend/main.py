@@ -247,7 +247,39 @@ async def get_cpu_by_computer(id: int):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occured when geting CPU information: {str(e)}"
         )
-
+        
+@app.get("/getAllTables") 
+async def get_all_tables():
+    query = """
+    SHOW TABLES 
+    """
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occured when geting all tables: {str(e)}"
+        )
+        
+@app.get("/getTuplesByAttributes/{tableName}")
+async def get_tuples_by_attributes(tableName: str, attributes: Optional[str] = None):
+    if attributes:
+        attribute_list = attributes.split(',')
+        validated_attributes = ",".join(attribute_list)
+    else:
+        validated_attributes = "*"
+    
+    query = f"SELECT {validated_attributes} FROM {tableName}"
+    
+    try:
+        results = await db.fetch_all(query)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred when getting tuples by attributes: {str(e)}"
+        )
 class ReviewType(str, Enum):
     performance = "Performance"
     satisfaction = "Satisfaction"

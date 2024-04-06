@@ -15,6 +15,7 @@ import EditReviewModal from "./pages/EditReviewModal";
 import { Review } from "./interfaces/Review";
 
 import ComputerModal from "./pages/ComputerModal";
+import Projection from "./pages/projection";
 
 function Home() {
   // User sign up states
@@ -219,15 +220,16 @@ function Home() {
     await checkUserAllReviews(curUserEmail);
   };
 
-
   return (
     <div className="text-center mt-10">
       <h1 className="text-3xl font-bold">Computers Galore!</h1>
       <div className="mt-5">
-        <button onClick={() => setComputerModalActive(true)}>Add Computer 🖥️</button>
+        <button onClick={() => setComputerModalActive(true)}>
+          Add Computer 🖥️
+        </button>
         <ComputerModal
           isOpen={computerModalActive}
-          onClose={()=>setComputerModalActive(false)}
+          onClose={() => setComputerModalActive(false)}
         />
         <Link to="/search">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
@@ -237,6 +239,11 @@ function Home() {
         <Link to="/aggregate">
           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
             Aggregate 📊
+          </button>
+        </Link>
+        <Link to="/projection">
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Projection 📊
           </button>
         </Link>
         <button onClick={() => setSignInModalActive(true)}>Log in 🏃</button>
@@ -305,6 +312,7 @@ function App() {
         <Route path="search" element={<SearchPage />} />
         <Route path="results" element={<ResultsPage result={null} />} />
         <Route path="aggregate" element={<Aggregate />} />
+        <Route path="projection" element={<Projection />} />
       </Routes>
     </Router>
   );
