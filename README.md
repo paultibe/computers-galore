@@ -20,4 +20,6 @@ Developed in collaboration with Junsu An and John Do.
     - Division  
 
 ### Frontend
-React, TypeScript, Material UI
+- React
+- TypeScript
+- Material UI
