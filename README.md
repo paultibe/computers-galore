@@ -5,7 +5,7 @@ A full-stack application that allows users to filter, search for, and compare co
 Developed in collaboration with Junsu An and John Do.
 
 SQL queries implemented
-  - Insert
+- Insert
   - Delete
   - Update
   - Selection
