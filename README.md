@@ -4,22 +4,14 @@ A full-stack application that allows users to filter, search for, and compare co
 
 Developed in collaboration with Junsu An and John Do.
 
-### Backend
-- FastAPI (Python)
-- MySQL
-  - SQL queries implemented
-    - Insert
-    - Delete
-    - Update
-    - Selection
-    - Projection
-    - Join
-    - Aggregation w/ Group By
-    - Aggregation w/ Having
-    - Nested aggregation w/ Group By
-    - Division  
-
-### Frontend
-- React
-- TypeScript
-- Material UI
+SQL queries implemented
+  - Insert
+  - Delete
+  - Update
+  - Selection
+  - Projection
+  - Join
+  - Aggregation w/ Group By
+  - Aggregation w/ Having
+  - Nested aggregation w/ Group By
+  - Division  
