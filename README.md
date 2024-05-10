@@ -4,14 +4,14 @@ A full-stack application that allows users to filter, search for, and compare co
 
 Developed in collaboration with Junsu An and John Do.
 
-SQL queries implemented
+SQL queries implemented:
 - Insert
-  - Delete
-  - Update
-  - Selection
-  - Projection
-  - Join
-  - Aggregation w/ Group By
-  - Aggregation w/ Having
-  - Nested aggregation w/ Group By
-  - Division  
+- Delete
+- Update
+- Selection
+- Projection
+- Join
+- Aggregation w/ Group By
+- Aggregation w/ Having
+- Nested aggregation w/ Group By
+- Division  
